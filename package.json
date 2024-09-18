@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
+    "lint": "eslint . --ext .js,.jsx",
     "format": "prettier --write .",
     "start:api": "pnpm --filter=api start",
     "start:web": "pnpm --filter=web start",
-    "start": "pnpm --stream -r run start"
+    "start": "pnpm --stream -r run start",
+    "prepare": "husky && husky install"
   },
   "workspaces": [
     "apps/*"
@@ -26,8 +27,17 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.9.0",
-    "husky": "^9.1.6",
+    "husky": "^8.0.0",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ]
   }
 }
