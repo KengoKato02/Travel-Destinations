@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/api', (req, res) => {
-  res.json({ message: 'Welcome to the Travel Destinations API!' });
+  res.json({ message: 'Welcome to the Travel Destinations Express API!' });
 });
 
 app.listen(port, () => {

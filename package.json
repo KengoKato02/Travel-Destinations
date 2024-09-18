@@ -7,9 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "start:api": "pnpm --filter api start",
-    "start:frontend": "pnpm --filter frontend start",
-    "start": "pnpm run --parallel start:api start:frontend"
+    "start:api": "pnpm --filter=api start",
+    "start:web": "pnpm --filter=web start",
+    "start": "pnpm --stream -r run start"
   },
   "workspaces": [
     "apps/*"
