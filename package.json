@@ -5,16 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --ext .js,.jsx",
-    "format": "prettier --write .",
+    "lint": "biome lint .",
+    "format": "biome format . --write",
     "start:api": "pnpm --filter=api start",
     "start:web": "pnpm --filter=web start",
     "start": "pnpm --stream -r run start",
     "prepare": "husky && husky install"
   },
-  "workspaces": [
-    "apps/*"
-  ],
+  "workspaces": ["apps/*"],
   "author": "",
   "license": "ISC",
   "engines": {
@@ -22,22 +20,12 @@
   },
   "type": "module",
   "devDependencies": {
-    "@eslint/js": "^9.10.0",
-    "eslint": "^9.10.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "globals": "^15.9.0",
+    "@biomejs/biome": "^1.9.1",
     "husky": "^8.0.0",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+    "lint-staged": "^15.2.10"
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml}": [
-      "prettier --write"
-    ]
+    "*.{js,jsx}": ["biome lint", "biome format --write"],
+    "*.{json,md,yml}": ["biome format --write"]
   }
 }

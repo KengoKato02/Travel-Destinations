@@ -57,10 +57,14 @@ The following scripts are available in the root `package.json`:
 
 ### Linting and Formatting
 
-This project uses ESLint for linting and Prettier for code formatting. The configurations can be found in:
+This project uses Biome for linting and code formatting. The configurations can be found in:
 
-- ESLint: `eslint.config.js`
-- Prettier: `.prettierrc.json`
+- `biome.json`: Biome configuration
+- `.biomeignore`: Files and directories to be ignored by Biome
+
+You can run linting and formatting using the following commands:
+- `pnpm lint`: Runs Biome linter on all files
+- `pnpm format`: Runs Biome formatter on all files
 
 ### Git Hooks
 
