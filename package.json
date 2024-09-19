@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "biome lint .",
+    "lint": "eslint .",
     "format": "biome format . --write",
     "start:api": "pnpm --filter=api start",
     "start:web": "pnpm --filter=web start",
@@ -21,11 +21,16 @@
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^1.9.1",
+    "@eslint/js": "^8.56.0",
+    "@html-eslint/eslint-plugin": "^0.24.0",
+    "@html-eslint/parser": "^0.24.0",
+    "eslint": "^8.56.0",
+    "eslint-config-extreme": "^1.0.22",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.10"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["biome lint", "biome format --write"],
+    "*.{js}": ["biome check --apply", "eslint --fix"],
     "*.{json,md,yml}": ["biome format --write"]
   }
 }
