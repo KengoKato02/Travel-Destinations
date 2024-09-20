@@ -13,7 +13,7 @@
     "prepare": "husky && husky install"
   },
   "workspaces": ["apps/*"],
-  "author": "",
+  "author": "Patrik, Dignaa, Frej, Kengo",
   "license": "ISC",
   "engines": {
     "node": ">=18.16.1"
