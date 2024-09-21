@@ -21,6 +21,7 @@ const config = [
 
 const htmlPlugin = await import('@html-eslint/eslint-plugin');
 const htmlParser = await import('@html-eslint/parser');
+
 config.push({
   files: ['**/*.html'],
   plugins: {
