@@ -30,7 +30,7 @@ config.push({
     parser: htmlParser
   },
   rules: {
-    ...htmlPlugin.default.configs.recommended.rules
+    ...htmlPlugin.default.configs.extended
   }
 });
 
