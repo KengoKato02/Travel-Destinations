@@ -7,9 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "format": "biome format . --write",
-    "start:api": "pnpm --filter=api start",
+    "start:api": "NODE_ENV=production pnpm --filter=api start",
     "start:web": "pnpm --filter=web start",
-    "start": "pnpm --stream -r run start",
+    "start": "NODE_ENV=production pnpm --stream -r run start",
+    "dev": "NODE_ENV=development pnpm --stream -r run dev",
     "prepare": "husky && husky install"
   },
   "workspaces": ["apps/*"],

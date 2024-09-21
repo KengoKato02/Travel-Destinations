@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
 
-import { config } from './config';
+// eslint-disable-next-line import-x/extensions
+import { config } from './config.js';
 
 const MONGODB_URI = config.isProduction
   ? config.mongodbAtlasUri

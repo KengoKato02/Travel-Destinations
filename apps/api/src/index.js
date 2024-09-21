@@ -1,7 +1,8 @@
 import cors from 'cors';
 import express from 'express';
 
-import { connectToDatabase } from './db/db';
+// eslint-disable-next-line import-x/extensions
+import { connectToDatabase } from './db/db.js';
 
 const app = express();
 const port = 3000;
