@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "cross-env NODE_ENV=production http-server . -p 8080 -c-1",
-    "dev": "NODE_ENV=development http-server . -p 8080 -c-1"
+    "dev": "NODE_ENV=development http-server . -p 8080 -c-1",
+    "build": "mkdir -p dist && cp -r * dist"
   },
   "devDependencies": {
     "http-server": "^14.1.1"
