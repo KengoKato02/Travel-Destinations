@@ -1,12 +1,15 @@
-const cors = require('cors');
-const express = require('express');
+import cors from 'cors';
+import express from 'express';
+
+// eslint-disable-next-line import-x/extensions
+import { connectToDatabase } from './db/db.js';
 
 const app = express();
 const port = 3000;
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:8080',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', '*']
   })
@@ -15,11 +18,15 @@ app.use(
 app.use(express.json());
 app.disable('x-powered-by');
 
-app.get('/api', (req, res) => {
-  res.json({ message: 'Welcome to the Travel Destinations Express API!' });
+app.get('/api', async (req, res) => {
+  const db = await connectToDatabase();
+  const collection = db.collection('messages');
+  const message = await collection.findOne({});
+  res.json({
+    message: message
+      ? message.text
+      : 'Welcome to the Travel Destinations Express API!'
+  });
 });
 
-app.listen(port, () => {
-  // Use a logger instead of console.log
-  // console.log(`API server running at http://localhost:${port}`);
-});
+app.listen(port, () => {});
