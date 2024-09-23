@@ -20,11 +20,11 @@ app.disable('x-powered-by');
 
 app.get('/api', async (req, res) => {
   const db = await connectToDatabase();
-  const collection = db.collection('messages');
+  const collection = db.collection('travel_destinations_collection');
   const message = await collection.findOne({});
   res.json({
     message: message
-      ? message.text
+      ? message.name
       : 'Welcome to the Travel Destinations Express API!'
   });
 });
