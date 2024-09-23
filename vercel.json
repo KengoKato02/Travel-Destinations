@@ -1,13 +1,21 @@
 {
-  "projects": {
-    "apps/web": {
-      "src": "apps/web",
-      "buildCommand": "pnpm build",
-      "outputDirectory": "apps/web/dist"
+  "builds": [
+    {
+      "src": "apps/web/**/*",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "apps/web/dist"
+      }
     },
-    "apps/api": {
-      "src": "apps/api",
-      "outputDirectory": "apps/api"
+    {
+      "src": "apps/api/api/**/*.js",
+      "use": "@vercel/node"
     }
-  }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/apps/api/api/$1"
+    }
+  ]
 }
