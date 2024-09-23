@@ -28,7 +28,7 @@ importers:
         version: 8.57.1
       eslint-config-extreme:
         specifier: ^1.0.22
-        version: 1.0.22(@biomejs/biome@1.9.2)(@eslint/js@8.57.1)(eslint-plugin-import@2.30.0(@typescript-eslint/parser@8.5.1-alpha.10(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1))(eslint@8.57.1)(oxlint@0.9.6)(tailwindcss@3.4.12)(typescript-eslint@8.6.0(eslint@8.57.1)(typescript@5.6.2))(typescript@5.6.2)
+        version: 1.0.22(@biomejs/biome@1.9.2)(@eslint/js@8.57.1)(eslint-plugin-import@2.30.0(@typescript-eslint/parser@8.5.1-alpha.10(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1))(eslint@8.57.1)(oxlint@0.9.7)(tailwindcss@3.4.12)(typescript-eslint@8.6.0(eslint@8.57.1)(typescript@5.6.2))(typescript@5.6.2)
       husky:
         specifier: ^8.0.0
         version: 8.0.3
@@ -859,43 +859,43 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@oxlint/darwin-arm64@0.9.6':
-    resolution: {integrity: sha512-dw0JMjgymvvYQE38D2sexcV+SNER2PL2TrUyYiy1YuhHSPeH8UX/c+iJstl02K03RRiNJIAmEdYv3a98+t/x5Q==}
+  '@oxlint/darwin-arm64@0.9.7':
+    resolution: {integrity: sha512-1eAUzJv6MfRikFcQUoTeOVBfq7h2Eb8rsfIUBx1rlsgdPH/WBK27maZxGcgrfd51Ng6wkA+a+v1ug1dWKHV1Eg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint/darwin-x64@0.9.6':
-    resolution: {integrity: sha512-fvXgv9eI6U1uRXUmdpWbcX1Tkv2VeYiIwrwBDARuYqI+YbxiuCsBx8RbRrw1C6SrKuZnihAPZIhebH/YRz/ZkQ==}
+  '@oxlint/darwin-x64@0.9.7':
+    resolution: {integrity: sha512-QZTZIZ8cchaziouujLki/012yX11TcUcx9d3dYi4Vdxy9FeNoMT8AfwyZH8MWUIV+NxOhaT3b3GdWqyMYtxO4w==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@0.9.6':
-    resolution: {integrity: sha512-9PIH+6ebuLlPFPguzpusnS0n0MbilvSdQ5CpHIFa9lA5qXAIX1UrKUwRz8MwXY9JZYY9YEHOqnHLQvJtY4r2Ag==}
+  '@oxlint/linux-arm64-gnu@0.9.7':
+    resolution: {integrity: sha512-8JHx25m8zf68JpwEBLczu6/qsLfI5g1+L7Lw0rc6YeD5ENJUpCheyyuzc5NrSDtfXS9RH4dh2GUZL5pAb94x9A==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-arm64-musl@0.9.6':
-    resolution: {integrity: sha512-2TQ0Ln0GzW0U8UZJqhgXWr5yncZraDqx8ylSCE6o6VYiO5CkFUSqLnornH+OYQwOLyIgnxneITnFI7mCWC3/Yw==}
+  '@oxlint/linux-arm64-musl@0.9.7':
+    resolution: {integrity: sha512-ziOQZAth0XW/rxUFSxa2GtPgXYwl34OHKgrpMeX/wz3876IA8HSDSHMpfi/8uAwsZ43DGtV3djEgJcMdyo3BsQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-x64-gnu@0.9.6':
-    resolution: {integrity: sha512-jlZSjZ1Qu7EQmGFZn1+HKqlQvgW5L+qkF5r1W4g03/b35I1XwaGaij5bw07cRsy70oIQOvUE+5wWGqqIxwtpDA==}
+  '@oxlint/linux-x64-gnu@0.9.7':
+    resolution: {integrity: sha512-FN+/8ErRRQDZ7WBqVTYmcYhkfhaczCV5+KwrZuDku48P3VHBqsAXlrDsnecIFsmP7t8zjWVpNOA7c2gVCtz3/w==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/linux-x64-musl@0.9.6':
-    resolution: {integrity: sha512-mPwnz8PTZTv7Swc3KPl2MdTjGxBLN8R1gjSWaWd8PAR8zQ9TFiz48hpI1m0MJV5KY9oOSUGFt8MmknD2BOqZ6A==}
+  '@oxlint/linux-x64-musl@0.9.7':
+    resolution: {integrity: sha512-DhVNquSAgU4EV4jojrYtm+0b0V43imIgOFIEUl8PalkVAZ6gSJ72df+Uwa0VNfRnAGh7c0gBy6CbYPwR1/NTFw==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/win32-arm64@0.9.6':
-    resolution: {integrity: sha512-gLS/kJh4TsbynN71O6moaXbdS7hfilmLAbMy3itanxta1+oW+W1b5yMn3XnYQKXZ4z48ERi2qf0Khe21VFXCZw==}
+  '@oxlint/win32-arm64@0.9.7':
+    resolution: {integrity: sha512-22x6I39XG15ngL315JwqoUtGyjqokW+2KaOE+lGyzsEES9d8U/cbnSLqNbl6vtOKdJCnUdtR9fSjpaix9H7tOw==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint/win32-x64@0.9.6':
-    resolution: {integrity: sha512-z8m0EiG4UtVr58b/7HenBSyaEo2dZNUVW57nx1DMO+XXQF/jg+SqYPbuDzMOD8Ygwjo1nhf8up5WiUcl/8ELAw==}
+  '@oxlint/win32-x64@0.9.7':
+    resolution: {integrity: sha512-lgAPqeTno/zGnVQ28ifsWDKMs8OMXmolDL1UFvzyce5hwPUz4AAg4SWTKraYrmem9jX0db4hJxIZrEuZ2SB0gA==}
     cpu: [x64]
     os: [win32]
 
@@ -1404,8 +1404,8 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
-  caniuse-lite@1.0.30001662:
-    resolution: {integrity: sha512-sgMUVwLmGseH8ZIrm1d51UbrhqMCH3jvS7gF/M6byuHOnKyLOBL7W8yz5V02OHwgLGA36o/AFhWzzh4uc5aqTA==}
+  caniuse-lite@1.0.30001663:
+    resolution: {integrity: sha512-o9C3X27GLKbLeTYZ6HBOLU1tsAcBZsLis28wrVzddShCS16RujjHp9GDHKZqrB3meE0YjhawvMFsGb/igqiPzA==}
 
   chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
@@ -1603,8 +1603,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.26:
-    resolution: {integrity: sha512-Z+OMe9M/V6Ep9n/52+b7lkvYEps26z4Yz3vjWL1V61W0q+VLF1pOHhMY17sa4roz4AWmULSI8E6SAojZA5L0YQ==}
+  electron-to-chromium@1.5.27:
+    resolution: {integrity: sha512-o37j1vZqCoEgBuWWXLHQgTN/KDKe7zwpiY5CPeq2RvUqOyJw9xnrULzZAEVQ5p4h+zjMk7hgtOoPdnLxr7m/jw==}
 
   emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
@@ -2670,8 +2670,8 @@ packages:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
 
-  oxlint@0.9.6:
-    resolution: {integrity: sha512-5UeXQK7n6qIktK9JTG7Nh8mH1NM9A/jssdCMw0P02mob6DwM13ycgeZtrD7Z22J7QSJKfGnfu41S2YSJJN3zaQ==}
+  oxlint@0.9.7:
+    resolution: {integrity: sha512-cMSAk8eXecViYG2qKviJnus6x2Rqa3aUgm7V40oToh8fctSLJBbwapWYexQ1oiP3T4Gz1si+gSKL8LDe5gmzdg==}
     engines: {node: '>=14.*'}
     hasBin: true
 
@@ -2690,8 +2690,8 @@ packages:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
 
-  parse-imports@2.1.1:
-    resolution: {integrity: sha512-TDT4HqzUiTMO1wJRwg/t/hYk8Wdp3iF/ToMIlAoVQfL1Xs/sTxq1dKWSMjMbQmIarfWKymOyly40+zmPHXMqCA==}
+  parse-imports@2.2.1:
+    resolution: {integrity: sha512-OL/zLggRp8mFhKL0rNORUTR4yBYujK/uU+xZL+/0Rgm2QE4nLO9v8PzEweSJEbMGKmDRjJE4R3IMJlL2di4JeQ==}
     engines: {node: '>= 18'}
 
   parseurl@1.3.3:
@@ -4364,28 +4364,28 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@oxlint/darwin-arm64@0.9.6':
+  '@oxlint/darwin-arm64@0.9.7':
     optional: true
 
-  '@oxlint/darwin-x64@0.9.6':
+  '@oxlint/darwin-x64@0.9.7':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@0.9.6':
+  '@oxlint/linux-arm64-gnu@0.9.7':
     optional: true
 
-  '@oxlint/linux-arm64-musl@0.9.6':
+  '@oxlint/linux-arm64-musl@0.9.7':
     optional: true
 
-  '@oxlint/linux-x64-gnu@0.9.6':
+  '@oxlint/linux-x64-gnu@0.9.7':
     optional: true
 
-  '@oxlint/linux-x64-musl@0.9.6':
+  '@oxlint/linux-x64-musl@0.9.7':
     optional: true
 
-  '@oxlint/win32-arm64@0.9.6':
+  '@oxlint/win32-arm64@0.9.7':
     optional: true
 
-  '@oxlint/win32-x64@0.9.6':
+  '@oxlint/win32-x64@0.9.7':
     optional: true
 
   '@pkgjs/parseargs@0.11.0':
@@ -5024,8 +5024,8 @@ snapshots:
 
   browserslist@4.23.3:
     dependencies:
-      caniuse-lite: 1.0.30001662
-      electron-to-chromium: 1.5.26
+      caniuse-lite: 1.0.30001663
+      electron-to-chromium: 1.5.27
       node-releases: 2.0.18
       update-browserslist-db: 1.1.0(browserslist@4.23.3)
 
@@ -5047,7 +5047,7 @@ snapshots:
 
   camelcase-css@2.0.1: {}
 
-  caniuse-lite@1.0.30001662: {}
+  caniuse-lite@1.0.30001663: {}
 
   chalk@2.4.2:
     dependencies:
@@ -5245,7 +5245,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.26: {}
+  electron-to-chromium@1.5.27: {}
 
   emoji-regex@10.4.0: {}
 
@@ -5387,7 +5387,7 @@ snapshots:
 
   eslint-config-biome@1.8.3: {}
 
-  eslint-config-extreme@1.0.22(@biomejs/biome@1.9.2)(@eslint/js@8.57.1)(eslint-plugin-import@2.30.0(@typescript-eslint/parser@8.5.1-alpha.10(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1))(eslint@8.57.1)(oxlint@0.9.6)(tailwindcss@3.4.12)(typescript-eslint@8.6.0(eslint@8.57.1)(typescript@5.6.2))(typescript@5.6.2):
+  eslint-config-extreme@1.0.22(@biomejs/biome@1.9.2)(@eslint/js@8.57.1)(eslint-plugin-import@2.30.0(@typescript-eslint/parser@8.5.1-alpha.10(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1))(eslint@8.57.1)(oxlint@0.9.7)(tailwindcss@3.4.12)(typescript-eslint@8.6.0(eslint@8.57.1)(typescript@5.6.2))(typescript@5.6.2):
     dependencies:
       '@biomejs/biome': 1.9.2
       '@eslint-community/eslint-plugin-eslint-comments': 4.4.0(eslint@8.57.1)
@@ -5415,7 +5415,7 @@ snapshots:
       eslint-plugin-unused-imports: 4.1.4(@typescript-eslint/eslint-plugin@8.5.1-alpha.10(@typescript-eslint/parser@8.5.1-alpha.10(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1)
       eslint-plugin-vitest: 0.5.4(@typescript-eslint/eslint-plugin@8.5.1-alpha.10(@typescript-eslint/parser@8.5.1-alpha.10(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1)(typescript@5.6.2))(eslint@8.57.1)(typescript@5.6.2)
       globals: 15.9.0
-      oxlint: 0.9.6
+      oxlint: 0.9.7
       typescript: 5.6.2
       typescript-eslint: 8.6.0(eslint@8.57.1)(typescript@5.6.2)
     transitivePeerDependencies:
@@ -5606,7 +5606,7 @@ snapshots:
       eslint: 8.57.1
       espree: 10.1.0
       esquery: 1.6.0
-      parse-imports: 2.1.1
+      parse-imports: 2.2.1
       semver: 7.6.3
       spdx-expression-parse: 4.0.0
       synckit: 0.9.1
@@ -6621,16 +6621,16 @@ snapshots:
       type-check: 0.4.0
       word-wrap: 1.2.5
 
-  oxlint@0.9.6:
+  oxlint@0.9.7:
     optionalDependencies:
-      '@oxlint/darwin-arm64': 0.9.6
-      '@oxlint/darwin-x64': 0.9.6
-      '@oxlint/linux-arm64-gnu': 0.9.6
-      '@oxlint/linux-arm64-musl': 0.9.6
-      '@oxlint/linux-x64-gnu': 0.9.6
-      '@oxlint/linux-x64-musl': 0.9.6
-      '@oxlint/win32-arm64': 0.9.6
-      '@oxlint/win32-x64': 0.9.6
+      '@oxlint/darwin-arm64': 0.9.7
+      '@oxlint/darwin-x64': 0.9.7
+      '@oxlint/linux-arm64-gnu': 0.9.7
+      '@oxlint/linux-arm64-musl': 0.9.7
+      '@oxlint/linux-x64-gnu': 0.9.7
+      '@oxlint/linux-x64-musl': 0.9.7
+      '@oxlint/win32-arm64': 0.9.7
+      '@oxlint/win32-x64': 0.9.7
 
   p-limit@3.1.0:
     dependencies:
@@ -6646,7 +6646,7 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  parse-imports@2.1.1:
+  parse-imports@2.2.1:
     dependencies:
       es-module-lexer: 1.5.4
       slashes: 3.0.12
