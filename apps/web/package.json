@@ -4,7 +4,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production http-server . -p 8080 -c-1",
     "dev": "cross-env NODE_ENV=development http-server . -p 8080 -c-1",
-    "build": "mkdir -p dist && find . -maxdepth 1 ! -name 'dist' ! -name '.' -exec cp -r {} dist/ \\;"
+    "build": "mkdir -p dist && cp -r * dist/ && rm -rf dist/dist"
   },
   "devDependencies": {
     "http-server": "^14.1.1"
