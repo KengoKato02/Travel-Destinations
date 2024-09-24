@@ -10,7 +10,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "output": "apps/web/dist",
+        "output": "dist",
         "buildCommand": "pnpm build"
       }
     }
