@@ -1,8 +1,7 @@
-import { stringify } from 'safe-stable-stringify';
-
 const path = require('node:path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const stringify = require('safe-stable-stringify');
 const webpack = require('webpack');
 
 module.exports = {
