@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/index.js",
-    "dev": "NODE_ENV=development nodemon src/index.js",
-    "vercel-build": "echo Hello Express"
+    "dev": "NODE_ENV=development nodemon src/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

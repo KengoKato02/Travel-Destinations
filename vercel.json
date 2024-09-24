@@ -14,11 +14,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "apps/api/index.js"
+      "dest": "/apps/api/index.js"
     },
     {
       "src": "/(.*)",
-      "dest": "apps/web/dist/$1"
+      "dest": "/apps/web/dist/$1"
     },
     {
       "handle": "filesystem"
