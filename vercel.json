@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "apps/web/**/*",
+      "src": "apps/web/",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
