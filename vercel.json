@@ -17,5 +17,9 @@
       "source": "/api/(.*)",
       "destination": "/apps/api/api/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "buildCommand": "pnpm build"
 }
