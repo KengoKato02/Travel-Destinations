@@ -5,8 +5,13 @@
       "src": "apps/web/package.json",
       "use": "@vercel/static-build",
       "config": {
+        "buildCommand": "pnpm build",
         "distDir": "apps/web/dist"
       }
+    },
+    {
+      "src": "apps/api/src/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -14,8 +19,12 @@
       "handle": "filesystem"
     },
     {
+      "src": "/api/(.*)",
+      "dest": "apps/api/src/index.js"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/apps/web/dist/$1"
+      "dest": "apps/web/dist/$1"
     }
   ]
 }
