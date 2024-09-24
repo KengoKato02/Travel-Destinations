@@ -9,7 +9,8 @@
       "src": "apps/web/",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "buildCommand": "pnpm build"
       }
     }
   ],
