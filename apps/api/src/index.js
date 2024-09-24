@@ -33,4 +33,10 @@ app.get('/api', async (req, res) => {
   });
 });
 
-app.listen(port, () => {});
+/* eslint-disable n/no-process-env */
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {});
+}
+/* eslint-enable n/no-process-env */
+
+export default app;
