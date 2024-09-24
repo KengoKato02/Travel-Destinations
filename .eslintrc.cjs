@@ -9,5 +9,8 @@ module.exports = {
     browser: true,
     es2021: true
   },
+  rules: {
+    'n/no-process-env': 'off' 
+  },
   ignorePatterns: ['node_modules', 'dist']
 };
