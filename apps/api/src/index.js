@@ -5,11 +5,10 @@ import express from 'express';
 import { connectToDatabase } from './db/db.js';
 
 const app = express();
-const port = 3000;
 
 app.use(
   cors({
-    origin: ['*'],
+    origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', '*']
   })
@@ -29,10 +28,6 @@ app.get('/api', async (req, res) => {
   });
 });
 
-/* eslint-disable n/no-process-env */
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {});
-}
-/* eslint-enable n/no-process-env */
+app.listen(3000);
 
 export default app;

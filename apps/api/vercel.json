@@ -1,0 +1,4 @@
+{
+  "redirects": [{ "source": "/", "destination": "/api", "permanent": true }],
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}

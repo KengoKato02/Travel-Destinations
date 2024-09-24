@@ -2,9 +2,9 @@
   "name": "web",
   "version": "1.0.0",
   "scripts": {
-    "start": "cross-env NODE_ENV=production webpack serve --open",
-    "dev": "cross-env NODE_ENV=development http-server . -p 8080 -c-1",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.config.js"
+    "start": "cross-env NODE_ENV=production http-server . -p 8080 -c-1",
+    "dev": "NODE_ENV=development http-server . -p 8080 -c-1",
+    "build": "cp -r ./src/* ./public/"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
