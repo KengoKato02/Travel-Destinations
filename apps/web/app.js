@@ -3,7 +3,13 @@ import './styles.css';
 document.addEventListener('DOMContentLoaded', async () => {
   const messageElement = document.getElementById('message');
 
-  const apiBaseUrl = 'http://localhost:3000/api';
+  if (!messageElement) {
+    return;
+  }
+
+  /* eslint-disable n/no-process-env */
+  const apiBaseUrl = process.env.API_URL;
+  /* eslint-enable n/no-process-env */
 
   try {
     const response = await fetch(apiBaseUrl);
