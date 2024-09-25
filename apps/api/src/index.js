@@ -2,57 +2,96 @@ import cors from 'cors';
 import express from 'express';
 import { ObjectId } from 'mongodb';
 
-// eslint-disable-next-line import-x/extensions
+/* eslint-disable import-x/extensions */
+import { config } from './db/config.js';
 import { connectToDatabase } from './db/db.js';
+/* eslint-enable import-x/extensions */
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(
-  cors({
-    origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
-  })
-);
-app.use(express.json());
-app.disable('x-powered-by');
+// Middleware setup
+setupMiddleware();
 
 // Database connection
 let db;
-const initDb = async () => {
+
+// Routes
+setupRoutes();
+
+// Server startup
+startServer();
+
+export default app;
+
+function setupMiddleware() {
+  app.use(
+    cors({
+      origin: config.isProduction
+        ? ['https://travel-destinations-mu.vercel.app/']
+        : ['http://localhost:8080', 'http://127.0.0.1:8080'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type']
+    })
+  );
+  app.use(express.json());
+  app.disable('x-powered-by');
+}
+
+async function initDb() {
   try {
-    db = await connectToDatabase();
+    return await connectToDatabase();
   } catch (error) {
-    throw new Error(`Failed to connect to the database: ${error.message}`);
+    console.error('Failed to connect to the database:', error);
+    throw error;
   }
-};
+}
 
-// Route handlers
-const homeRoute = async (req, res) => {
-  const collection = db.collection('travel_destinations_collection');
-  const message = await collection.findOne({});
-  res.json({
-    message: message
-      ? message.name
-      : 'Welcome to the Travel Destinations Express API!'
-  });
-};
+function ensureDbConnected(req, res, next) {
+  if (!db) {
+    return res
+      .status(500)
+      .json({ error: 'Database connection not established' });
+  }
+  next();
+}
 
-const getAllDestinations = async (req, res) => {
+function setupRoutes() {
+  app.use(ensureDbConnected);
+
+  app.get('/api', getHomeRoute);
+  app.get('/api/destinations', getAllDestinations);
+  app.get('/api/destinations/:id', getDestinationById);
+  app.post('/api/destinations', createDestination);
+  app.put('/api/destinations/:id', updateDestination);
+  app.delete('/api/destinations/:id', deleteDestination);
+}
+
+async function getHomeRoute(req, res) {
+  try {
+    const collection = db.collection('travel_destinations_collection');
+    const message = await collection.findOne({});
+    res.json({
+      message: message
+        ? message.name
+        : 'Welcome to the Travel Destinations Express API!'
+    });
+  } catch (error) {
+    handleError(error, res, 'Error in home route');
+  }
+}
+
+async function getAllDestinations(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const destinations = await collection.find({}).toArray();
     res.status(200).json(destinations);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    handleError(error, res, 'Error fetching destinations');
   }
-};
+}
 
-const getDestinationById = async (req, res) => {
+async function getDestinationById(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const destinationID = new ObjectId(req.params.id);
@@ -64,47 +103,44 @@ const getDestinationById = async (req, res) => {
 
     res.json(destination);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    handleError(error, res, 'Error fetching destination');
   }
-};
+}
 
-const createDestination = async (req, res) => {
+async function createDestination(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const newDestination = req.body;
-    const addedDestination = await collection.insertOne(newDestination);
-    res.status(201).json(addedDestination);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
-  }
-};
 
-const updateDestination = async (req, res) => {
+    const result = await collection.insertOne(newDestination);
+    res.status(201).json({ ...newDestination, _id: result.insertedId });
+  } catch (error) {
+    handleError(error, res, 'Error creating destination');
+  }
+}
+
+async function updateDestination(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const updatedDestination = req.body;
-    const result = await collection.updateOne(
+
+    const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(req.params.id) },
-      { $set: updatedDestination }
+      { $set: updatedDestination },
+      { returnDocument: 'after' }
     );
 
-    if (result.matchedCount === 0) {
+    if (!result.value) {
       return res.status(404).json({ error: 'Destination not found' });
     }
 
-    res.json(updatedDestination);
+    res.json(result.value);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    handleError(error, res, 'Error updating destination');
   }
-};
+}
 
-const deleteDestination = async (req, res) => {
+async function deleteDestination(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const result = await collection.deleteOne({
@@ -117,30 +153,26 @@ const deleteDestination = async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    handleError(error, res, 'Error deleting destination');
   }
-};
+}
 
-// Routes
-app.get('/api', homeRoute);
-app.get('/traveldestinations', getAllDestinations);
-app.get('/traveldestinations/:id', getDestinationById);
-app.post('/traveldestinations', createDestination);
-app.put('/traveldestinations/:id', updateDestination);
-app.delete('/traveldestinations/:id', deleteDestination);
+function handleError(error, res, message) {
+  console.error(`${message}:`, error);
+  res.status(500).json({ error: 'Internal Server Error' });
+}
 
-// Server startup
-const startServer = async () => {
-  await initDb();
-  app.listen(PORT, () => {
-    /* eslint-disable no-console */
-    console.log(`Server running on port ${PORT}`);
-    /* eslint-enable no-console */
-  });
-};
+async function startServer() {
+  try {
+    db = await initDb();
 
-startServer();
-
-export default app;
+    app.listen(PORT, () => {
+      console.log(
+        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error('Failed to start the server:', error);
+    process.exit(1);
+  }
+}
