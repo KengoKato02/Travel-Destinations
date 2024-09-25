@@ -1,8 +1,7 @@
 const path = require('node:path');
 
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const stringify = require('safe-stable-stringify');
-const webpack = require('webpack');
 
 module.exports = {
   entry: './app.js',
@@ -34,17 +33,18 @@ module.exports = {
       template: './index.html',
       filename: 'index.html'
     }),
-    /* eslint-disable n/no-process-env */
-    new webpack.DefinePlugin({
-      'process.env.API_BASE_URL': stringify(
-        process.env.API_BASE_URL || 'http://localhost:3000/api'
-      )
+    new HtmlWebpackPlugin({
+      template: './new-destination.html',
+      filename: 'new-destination.html'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'icons', to: 'icons' }]
     })
-    /* eslint-enable n/no-process-env */
   ],
   devServer: {
     static: './dist',
-    port: 8080
+    port: 8080,
+    hot: true
   },
   mode: 'development'
 };

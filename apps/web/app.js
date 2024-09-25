@@ -1,10 +1,9 @@
+import './styles.css';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const messageElement = document.getElementById('message');
 
-  /* eslint-disable sonarjs/no-commented-code */
-  // const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
   const apiBaseUrl = 'http://localhost:3000/api';
-  /* eslint-enable sonarjs/no-commented-code */
 
   try {
     const response = await fetch(apiBaseUrl);
