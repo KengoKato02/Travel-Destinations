@@ -132,19 +132,15 @@ app.delete('/traveldestinations/:id', async (req, res) => {
   }
 });
 
-/* eslint-disable n/no-process-env */
 const PORT = process.env.PORT || 3000;
-/* eslint-enable n/no-process-env */
 
 const startServer = async () => {
   await initDb();
 
   app.listen(PORT, () => {
-    /* eslint-disable no-console */
     console.log(
       `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
     );
-    /* eslint-enable no-console */
   });
 };
 

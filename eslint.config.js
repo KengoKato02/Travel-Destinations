@@ -17,7 +17,8 @@ const config = [
       }
     },
     rules: {
-      'n/no-process-env': 'off'
+      'n/no-process-env': 'off',
+      'no-console': 'off'
     }
   }
 ];

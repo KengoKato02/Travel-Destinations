@@ -1,4 +1,3 @@
-// eslint-disable-next-line n/no-process-env
 import { stringify } from 'safe-stable-stringify';
 
 const { API_URL } = process.env;
