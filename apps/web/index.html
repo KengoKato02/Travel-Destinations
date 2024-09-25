@@ -1,16 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Destinations</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div id="app">
-        <h1>Travel Destinations</h1>
-        <div id="message"></div>
-    </div>
-    <script src="app.js"></script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>Destinations</title>
+    </head>
+    <body>
+        <header class="globalHeader">
+            <img
+                src="./icons/earth-outline.svg"
+                alt=""
+                width="20"
+            />
+            <a
+                href="/"
+                class="globalHeader__link"
+            >
+                My travel journal.
+            </a>
+        </header>
+        <main class="mainContent">
+            <h1 class="mainContent__title">Destinations</h1>
+            <ul class="destinations">
+                <!--test destination-->
+                <li class="destination">
+                    <img
+                        src="https://images.unsplash.com/photo-1727108718939-55cffc2cf873?q=80&w=2068&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        class="destination__image"
+                    />
+                    <div class="destination__content">
+                        <p class="destination__country">
+                            <img
+                                src="./icons/location-outline.svg"
+                                width="16"
+                            />
+                            Lorem ipsum
+                        </p>
+                        <h2>Nowhere here</h2>
+                        <p class="destination__time">
+                            <time datetime="2024-01-05">Jan 5</time>
+                            to
+                            <time datetime="2024-02-08">Feb 8</time>
+                        </p>
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Optio fugiat dicta similique. Eos, similique
+                            provident vero assumenda in quod eius libero
+                            corporis porro sit pariatur voluptatibus, excepturi
+                            esse enim quo?
+                        </p>
+                    </div>
+                </li>
+            </ul>
+            <a
+                href="/new-destination"
+                class="button"
+            >
+                <img
+                    src="./icons/add-circle-outline.svg"
+                    width="24"
+                    alt=""
+                />
+                Add entry</a
+            >
+        </main>
+        <script src="loadDestinations.js"></script>
+    </body>
 </html>
