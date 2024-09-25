@@ -6,7 +6,6 @@ import { ObjectId } from 'mongodb';
 import { connectToDatabase } from './db/db.js';
 
 const app = express();
-const port = 3000;
 
 app.use(
   cors({
@@ -132,7 +131,9 @@ app.delete('/traveldestinations/:id', async (req, res) => {
 const startServer = async () => {
   await initDb();
 
-  app.listen(port, () => {});
+  app.listen(3000, () => {});
 };
 
 startServer();
+
+export default app;
