@@ -10,16 +10,12 @@ import { connectToDatabase } from './db/db.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware setup
 setupMiddleware();
 
-// Database connection
 let db;
 
-// Routes
 setupRoutes();
 
-// Server startup
 startServer();
 
 export default app;
