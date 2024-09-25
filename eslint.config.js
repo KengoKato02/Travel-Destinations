@@ -13,10 +13,10 @@ const config = [
         // Add any global variables here
         node: true,
         browser: true,
-        es2021: true
-      }
-    }
-  }
+        es2021: true,
+      },
+    },
+  },
 ];
 
 const htmlPlugin = await import('@html-eslint/eslint-plugin');
@@ -25,14 +25,14 @@ const htmlParser = await import('@html-eslint/parser');
 config.push({
   files: ['**/*.html'],
   plugins: {
-    '@html-eslint': htmlPlugin
+    '@html-eslint': htmlPlugin,
   },
   languageOptions: {
-    parser: htmlParser
+    parser: htmlParser,
   },
   rules: {
-    ...htmlPlugin.default.configs.extended
-  }
+    ...htmlPlugin.default.configs.extended,
+  },
 });
 
 export default config;
