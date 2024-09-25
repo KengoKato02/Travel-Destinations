@@ -10,7 +10,7 @@ module.exports = {
     es2021: true
   },
   rules: {
-    'n/no-process-env': 'off' 
+    'n/no-process-env': 'off'
   },
   ignorePatterns: ['node_modules', 'dist']
 };

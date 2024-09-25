@@ -17,15 +17,6 @@ on:
         required: true
 
 jobs:
-  setup:
-    name: Setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@latest
-      - name: Install pnpm
-        run: npm install -g pnpm
-
   deploy:
     runs-on: ubuntu-latest
     steps:

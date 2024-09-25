@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
   return {
-    entry: './app.js',
+    entry: './src/javascript/app.js',
     output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
@@ -35,15 +35,15 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './index.html',
+        template: './src/html/index.html',
         filename: 'index.html'
       }),
       new HtmlWebpackPlugin({
-        template: './new-destination.html',
+        template: './src/html/new-destination.html',
         filename: 'new-destination.html'
       }),
       new CopyWebpackPlugin({
-        patterns: [{ from: 'icons', to: 'icons' }]
+        patterns: [{ from: 'src/icons', to: 'icons' }]
       }),
       new webpack.DefinePlugin({
         'process.env.API_URL': stringify(

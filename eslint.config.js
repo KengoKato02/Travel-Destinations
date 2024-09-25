@@ -15,6 +15,9 @@ const config = [
         browser: true,
         es2021: true
       }
+    },
+    rules: {
+      'n/no-process-env': 'off'
     }
   }
 ];
