@@ -20,26 +20,46 @@ app.use(
 );
 
 let db;
+
 const initDb = async () => {
   try {
-    db = await connectToDatabase();
-  } catch {
-    process.exit(1); // Exit the process if the DB connection fails
+    return await connectToDatabase();
+  } catch (error) {
+    console.error('Failed to connect to the database:', error);
+    throw error; // Propagate the error
   }
 };
 
 app.use(express.json());
 app.disable('x-powered-by');
 
+// Middleware to ensure database connection
+const ensureDbConnected = async (req, res, next) => {
+  if (!db) {
+    return res
+      .status(500)
+      .json({ error: 'Database connection not established' });
+  }
+  next();
+};
+
+// Apply the middleware to all routes
+app.use(ensureDbConnected);
+
 // Home route
 app.get('/api', async (req, res) => {
-  const collection = db.collection('travel_destinations_collection');
-  const message = await collection.findOne({});
-  res.json({
-    message: message
-      ? message.name
-      : 'Welcome to the Travel Destinations Express API!'
-  });
+  try {
+    const collection = db.collection('travel_destinations_collection');
+    const message = await collection.findOne({});
+    res.json({
+      message: message
+        ? message.name
+        : 'Welcome to the Travel Destinations Express API!'
+    });
+  } catch (error) {
+    console.error('Error in home route:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Get all travel destinations
@@ -49,9 +69,8 @@ app.get('/traveldestinations', async (req, res) => {
     const destinations = await collection.find({}).toArray();
     res.status(200).json(destinations);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    console.error('Error fetching destinations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -68,9 +87,8 @@ app.get('/traveldestinations/:id', async (req, res) => {
 
     res.json(destination);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    console.error('Error fetching destination:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -80,12 +98,11 @@ app.post('/traveldestinations', async (req, res) => {
     const collection = db.collection('travel_destinations_collection');
     const newDestination = req.body;
 
-    const addedDestination = await collection.insertOne(newDestination);
-    res.status(201).json(addedDestination);
+    const result = await collection.insertOne(newDestination);
+    res.status(201).json({ ...newDestination, _id: result.insertedId });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    console.error('Error creating destination:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -95,20 +112,20 @@ app.put('/traveldestinations/:id', async (req, res) => {
     const collection = db.collection('travel_destinations_collection');
     const updatedDestination = req.body;
 
-    const result = await collection.updateOne(
+    const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(req.params.id) },
-      { $set: updatedDestination }
+      { $set: updatedDestination },
+      { returnDocument: 'after' }
     );
 
-    if (result.matchedCount === 0) {
+    if (!result.value) {
       return res.status(404).json({ error: 'Destination not found' });
     }
 
-    res.json(updatedDestination);
+    res.json(result.value);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    console.error('Error updating destination:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -126,22 +143,26 @@ app.delete('/traveldestinations/:id', async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Internal Server Error', details: error.message });
+    console.error('Error deleting destination:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
-  await initDb();
+  try {
+    db = await initDb();
 
-  app.listen(PORT, () => {
-    console.log(
-      `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
-    );
-  });
+    app.listen(PORT, () => {
+      console.log(
+        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error('Failed to start the server:', error);
+    process.exit(1);
+  }
 };
 
 startServer();
