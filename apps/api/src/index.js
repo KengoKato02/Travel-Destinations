@@ -2,14 +2,18 @@ import cors from 'cors';
 import express from 'express';
 import { ObjectId } from 'mongodb';
 
-// eslint-disable-next-line import-x/extensions
+/* eslint-disable import-x/extensions */
+import { config } from './db/config.js';
 import { connectToDatabase } from './db/db.js';
+/* eslint-enable import-x/extensions */
 
 const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
+    origin: config.isProduction
+      ? ['https://travel-destinations-mu.vercel.app/']
+      : ['http://localhost:8080', 'http://127.0.0.1:8080'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type']
   })
@@ -128,10 +132,16 @@ app.delete('/traveldestinations/:id', async (req, res) => {
   }
 });
 
+const PORT = process.env.PORT || 3000;
+
 const startServer = async () => {
   await initDb();
 
-  app.listen(3000, () => {});
+  app.listen(PORT, () => {
+    console.log(
+      `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+    );
+  });
 };
 
 startServer();
