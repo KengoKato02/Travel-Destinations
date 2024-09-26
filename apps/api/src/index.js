@@ -36,7 +36,6 @@ function setupMiddleware() {
 async function startServer() {
   try {
     db = await connectToDatabase();
-    console.log('in start server', db);
 
     app.listen(PORT, () => {
       console.log(
@@ -50,12 +49,12 @@ async function startServer() {
 }
 
 function setupRoutes() {
-  app.get('/api', getHomeRoute);
-  app.get('/api/destinations', getAllDestinations);
-  app.get('/api/destinations/:id', getDestinationById);
-  app.post('/api/destinations', createDestination);
-  app.put('/api/destinations/:id', updateDestination);
-  app.delete('/api/destinations/:id', deleteDestination);
+  app.get('/api/v1', getHomeRoute);
+  app.get('/api/v1/destinations', getAllDestinations);
+  app.get('/api/v1/destinations/:id', getDestinationById);
+  app.post('/api/v1/destinations', createDestination);
+  app.put('/api/v1/destinations/:id', updateDestination);
+  app.delete('/api/v1/destinations/:id', deleteDestination);
 }
 
 async function getHomeRoute(req, res) {
@@ -74,10 +73,17 @@ async function getHomeRoute(req, res) {
 
 async function getAllDestinations(req, res) {
   try {
-    const collection = db.collection('travel_destinations_collection');
-    const filtered = getFilterQuery(req.query);
+    const collection = db.collection('Destination');
+    const filters = req.query;
 
-    const destinations = await collection.find(filtered).toArray();
+    const query = Object.keys(filters).length ? getFilterQuery(filters) : {};
+
+    const destinations = await collection.find(query).toArray();
+
+    if (destinations.length === 0) {
+      return res.status(404).json({ message: 'No destinations found' });
+    }
+
     res.status(200).json(destinations);
   } catch (error) {
     handleError(error, res, 'Error fetching destinations');
@@ -86,7 +92,11 @@ async function getAllDestinations(req, res) {
 
 async function getDestinationById(req, res) {
   try {
-    const collection = db.collection('travel_destinations_collection');
+    const collection = db.collection('Destination');
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid destination ID' });
+    }
     const destinationID = new ObjectId(req.params.id);
     const destination = await collection.findOne({ _id: destinationID });
 
@@ -94,7 +104,7 @@ async function getDestinationById(req, res) {
       return res.status(404).json({ error: 'Destination not found' });
     }
 
-    res.json(destination);
+    res.status(200).json(destination);
   } catch (error) {
     handleError(error, res, 'Error fetching destination');
   }
@@ -102,10 +112,17 @@ async function getDestinationById(req, res) {
 
 async function createDestination(req, res) {
   try {
-    const collection = db.collection('travel_destinations_collection');
+    const collection = db.collection('Destination');
     const newDestination = req.body;
 
+    const { Title, DateFrom, DateTo, PictureURL, Country } = newDestination;
+
+    if (!Title || !DateFrom || !DateTo || !PictureURL || !Country) {
+      return res.status(400).json({ error: 'All fields required are not met' });
+    }
+
     const result = await collection.insertOne(newDestination);
+
     res.status(201).json({ ...newDestination, _id: result.insertedId });
   } catch (error) {
     handleError(error, res, 'Error creating destination');
@@ -114,8 +131,18 @@ async function createDestination(req, res) {
 
 async function updateDestination(req, res) {
   try {
-    const collection = db.collection('travel_destinations_collection');
+    const collection = db.collection('Destination');
     const updatedDestination = req.body;
+
+    const { Title, DateFrom, DateTo, PictureURL, Country } = updatedDestination;
+
+    if (!Title || !DateFrom || !DateTo || !PictureURL || !Country) {
+      return res.status(400).json({ error: 'All fields required are not met' });
+    }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid destination ID' });
+    }
 
     const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(req.params.id) },
@@ -123,11 +150,7 @@ async function updateDestination(req, res) {
       { returnDocument: 'after' }
     );
 
-    if (!result.value) {
-      return res.status(404).json({ error: 'Destination not found' });
-    }
-
-    res.json(result.value);
+    res.status(200).json(result.value);
   } catch (error) {
     handleError(error, res, 'Error updating destination');
   }
@@ -135,7 +158,12 @@ async function updateDestination(req, res) {
 
 async function deleteDestination(req, res) {
   try {
-    const collection = db.collection('travel_destinations_collection');
+    const collection = db.collection('Destination');
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid destination ID' });
+    }
+
     const result = await collection.deleteOne({
       _id: new ObjectId(req.params.id)
     });
