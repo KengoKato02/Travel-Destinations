@@ -1,18 +1,24 @@
 import { MongoClient } from 'mongodb';
 
-// eslint-disable-next-line import-x/extensions
-import { config } from './config.js';
-
-const MONGODB_URI = config.isProduction
-  ? config.mongodbAtlasUri
-  : config.mongodbLocalUri;
-
-let client;
+let db;
 
 export async function connectToDatabase() {
-  if (!client) {
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
+  const uri = process.env.MONGODB_URI;
+  const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+
+  if (!db) {
+    try {
+      await client.connect();
+      db = client.db(process.env.MONGODB_DB_NAME);
+      console.log('Connected to MongoDB');
+    } catch (error) {
+      console.error('Database connection error:', error);
+      throw error;
+    }
   }
-  return client.db();
+
+  return db;
 }

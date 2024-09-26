@@ -2,6 +2,12 @@
 
 This project is a monorepo workspace containing a vanilla JavaScript frontend and an Express.js API backend for a Travel Destinations application.
 
+## E-R Diagrams
+
+![ER Diagram V1](/assets/ER-Diagram-v1.png)
+
+This initial version of the ER diagram for the Travel Destinations project meets the minimum requirements, depicting a simple relationship between users and destinations. It shows a one-to-many relationship where one user can have multiple destinations.
+
 ## Project Structure
 
 The project is organized into the following directories:

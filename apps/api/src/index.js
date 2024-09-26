@@ -8,48 +8,61 @@ import { connectToDatabase } from './db/db.js';
 /* eslint-enable import-x/extensions */
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    origin: config.isProduction
-      ? ['https://travel-destinations-mu.vercel.app/']
-      : ['http://localhost:8080', 'http://127.0.0.1:8080'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
-  })
-);
+setupMiddleware();
+setupRoutes();
 
 let db;
 
-const initDb = async () => {
+startServer();
+
+export default app;
+
+function setupMiddleware() {
+  app.use(
+    cors({
+      origin:
+        config.isProduction === 'production'
+          ? ['https://travel-destinations-mu.vercel.app/']
+          : ['http://localhost:8080', 'http://127.0.0.1:8080'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type']
+    })
+  );
+  app.use(express.json());
+  app.disable('x-powered-by');
+}
+
+async function startServer() {
   try {
-    return await connectToDatabase();
+    db = await connectToDatabase();
+    console.log('in start server', db);
+
+    app.listen(PORT, () => {
+      console.log(
+        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+      );
+    });
   } catch (error) {
-    console.error('Failed to connect to the database:', error);
-    throw error; // Propagate the error
+    console.error('Failed to start the server:', error);
+    process.exit(1);
   }
-};
+}
 
-app.use(express.json());
-app.disable('x-powered-by');
+function setupRoutes() {
+  app.get('/api', getHomeRoute);
+  app.get('/api/destinations', getAllDestinations);
+  app.get('/api/destinations/:id', getDestinationById);
+  app.post('/api/destinations', createDestination);
+  app.put('/api/destinations/:id', updateDestination);
+  app.delete('/api/destinations/:id', deleteDestination);
+}
 
-// Middleware to ensure database connection
-const ensureDbConnected = async (req, res, next) => {
-  if (!db) {
-    return res
-      .status(500)
-      .json({ error: 'Database connection not established' });
-  }
-  next();
-};
-
-// Apply the middleware to all routes
-app.use(ensureDbConnected);
-
-// Home route
-app.get('/api', async (req, res) => {
+async function getHomeRoute(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
+    console.log(collection);
     const message = await collection.findOne({});
     res.json({
       message: message
@@ -57,25 +70,21 @@ app.get('/api', async (req, res) => {
         : 'Welcome to the Travel Destinations Express API!'
     });
   } catch (error) {
-    console.error('Error in home route:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleError(error, res, 'Error in home route');
   }
-});
+}
 
-// Get all travel destinations
-app.get('/traveldestinations', async (req, res) => {
+async function getAllDestinations(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const destinations = await collection.find({}).toArray();
     res.status(200).json(destinations);
   } catch (error) {
-    console.error('Error fetching destinations:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleError(error, res, 'Error fetching destinations');
   }
-});
+}
 
-// Get a single travel destination by ID
-app.get('/traveldestinations/:id', async (req, res) => {
+async function getDestinationById(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const destinationID = new ObjectId(req.params.id);
@@ -87,13 +96,11 @@ app.get('/traveldestinations/:id', async (req, res) => {
 
     res.json(destination);
   } catch (error) {
-    console.error('Error fetching destination:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleError(error, res, 'Error fetching destination');
   }
-});
+}
 
-// Create a new travel destination
-app.post('/traveldestinations', async (req, res) => {
+async function createDestination(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const newDestination = req.body;
@@ -101,13 +108,11 @@ app.post('/traveldestinations', async (req, res) => {
     const result = await collection.insertOne(newDestination);
     res.status(201).json({ ...newDestination, _id: result.insertedId });
   } catch (error) {
-    console.error('Error creating destination:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleError(error, res, 'Error creating destination');
   }
-});
+}
 
-// Update an existing travel destination
-app.put('/traveldestinations/:id', async (req, res) => {
+async function updateDestination(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const updatedDestination = req.body;
@@ -124,13 +129,11 @@ app.put('/traveldestinations/:id', async (req, res) => {
 
     res.json(result.value);
   } catch (error) {
-    console.error('Error updating destination:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleError(error, res, 'Error updating destination');
   }
-});
+}
 
-// Delete a travel destination
-app.delete('/traveldestinations/:id', async (req, res) => {
+async function deleteDestination(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
     const result = await collection.deleteOne({
@@ -143,28 +146,11 @@ app.delete('/traveldestinations/:id', async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting destination:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleError(error, res, 'Error deleting destination');
   }
-});
+}
 
-const PORT = process.env.PORT || 3000;
-
-const startServer = async () => {
-  try {
-    db = await initDb();
-
-    app.listen(PORT, () => {
-      console.log(
-        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
-      );
-    });
-  } catch (error) {
-    console.error('Failed to start the server:', error);
-    process.exit(1);
-  }
-};
-
-startServer();
-
-export default app;
+function handleError(error, res, message) {
+  console.error(`${message}:`, error);
+  res.status(500).json({ error: 'Internal Server Error' });
+}
