@@ -61,7 +61,6 @@ function setupRoutes() {
 async function getHomeRoute(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
-    console.log(collection);
     const message = await collection.findOne({});
     res.json({
       message: message
@@ -76,7 +75,9 @@ async function getHomeRoute(req, res) {
 async function getAllDestinations(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
-    const destinations = await collection.find({}).toArray();
+    const filtered = getFilterQuery(req.query);
+
+    const destinations = await collection.find(filtered).toArray();
     res.status(200).json(destinations);
   } catch (error) {
     handleError(error, res, 'Error fetching destinations');
@@ -152,4 +153,26 @@ async function deleteDestination(req, res) {
 function handleError(error, res, message) {
   console.error(`${message}:`, error);
   res.status(500).json({ error: 'Internal Server Error' });
+}
+
+function getFilterQuery(filters) {
+  const query = {};
+
+  const { name, location, travelDateFrom, travelDateTo, hasDescription } =
+    filters;
+
+  if (name) { query.name = name; }
+  if (location) { query.location = location; }
+
+  if (travelDateFrom || travelDateTo) {
+    query.$and = [];
+    if (travelDateFrom) { query.$and.push({ travelDateFrom: { $gte: travelDateFrom } }); }
+    if (travelDateTo) { query.$and.push({ travelDateTo: { $lte: travelDateTo } }); }
+  }
+
+  if (hasDescription) {
+    query.description = { $exists: hasDescription.trim() === 'true' };
+  }
+
+  return query;
 }
