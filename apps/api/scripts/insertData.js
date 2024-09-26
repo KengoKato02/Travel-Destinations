@@ -1,4 +1,4 @@
-import { connectToDatabase } from '../apps/api/src/db/db.js';
+import { connectToDatabase } from '../src/db/db.js';
 
 import { generateDummyUsers, generateDummyDestinations } from './dummyData.js';
 
