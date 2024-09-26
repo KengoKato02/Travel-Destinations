@@ -34,11 +34,11 @@ function setupMiddleware() {
   app.use(
     cors({
       origin: [
-        'https://travel-destinations-mu.vercel.app/',
+        'https://travel-destinations-mu.vercel.app',
         'http://localhost:8080',
         'http://127.0.0.1:8080'
       ],
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type']
     })
   );
@@ -62,6 +62,7 @@ async function startServer() {
 }
 
 function setupRoutes() {
+  app.options('*', cors());
   // DESTINATION ROUTES
   app.get('/api/v1', (req, res) => getHomeRoute(req, res, db));
   app.get('/api/v1/destinations', (req, res) =>
