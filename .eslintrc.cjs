@@ -11,8 +11,7 @@ module.exports = {
   },
   rules: {
     'n/no-process-env': 'off',
-    'import/no-unresolved': 'off', 
-    'import/named': 'off', 
+    "import/no-relative-parent-imports": "off"
   },
   ignorePatterns: ['node_modules', 'dist'],
 };
