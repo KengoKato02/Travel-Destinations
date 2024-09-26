@@ -9,6 +9,13 @@ import {
   updateDestination,
   deleteDestination
 } from './controllers/destinations.js';
+import {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser
+} from './controllers/users.js';
 import { config } from './db/config.js';
 import { connectToDatabase } from './db/db.js';
 
@@ -54,6 +61,7 @@ async function startServer() {
 }
 
 function setupRoutes() {
+  // DESTINATION ROUTES
   app.get('/api/v1', (req, res) => getHomeRoute(req, res, db));
   app.get('/api/v1/destinations', (req, res) =>
     getAllDestinations(req, res, db)
@@ -70,4 +78,11 @@ function setupRoutes() {
   app.delete('/api/v1/destinations/:id', (req, res) =>
     deleteDestination(req, res, db)
   );
+
+  // USER ROUTES
+  app.get('/api/v1/users', (req, res) => getAllUsers(req, res, db));
+  app.get('/api/v1/users/:id', (req, res) => getUserById(req, res, db));
+  app.post('/api/v1/users', (req, res) => createUser(req, res, db));
+  app.put('/api/v1/users/:id', (req, res) => updateUser(req, res, db));
+  app.delete('/api/v1/users/:id', (req, res) => deleteUser(req, res, db));
 }
