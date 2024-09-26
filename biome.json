@@ -20,5 +20,8 @@
     "formatter": {
       "quoteStyle": "single"
     }
+  },
+  "files": {
+    "include": ["**/*.js", "**/*.css", "**/*.html"]
   }
 }
