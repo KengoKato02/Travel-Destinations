@@ -11,10 +11,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 setupMiddleware();
+setupRoutes();
 
 let db;
-
-setupRoutes();
 
 startServer();
 
@@ -23,9 +22,10 @@ export default app;
 function setupMiddleware() {
   app.use(
     cors({
-      origin: config.isProduction
-        ? ['https://travel-destinations-mu.vercel.app/']
-        : ['http://localhost:8080', 'http://127.0.0.1:8080'],
+      origin:
+        config.isProduction === 'production'
+          ? ['https://travel-destinations-mu.vercel.app/']
+          : ['http://localhost:8080', 'http://127.0.0.1:8080'],
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       allowedHeaders: ['Content-Type']
     })
@@ -34,27 +34,23 @@ function setupMiddleware() {
   app.disable('x-powered-by');
 }
 
-async function initDb() {
+async function startServer() {
   try {
-    return await connectToDatabase();
-  } catch (error) {
-    console.error('Failed to connect to the database:', error);
-    throw error;
-  }
-}
+    db = await connectToDatabase();
+    console.log('in start server', db);
 
-function ensureDbConnected(req, res, next) {
-  if (!db) {
-    return res
-      .status(500)
-      .json({ error: 'Database connection not established' });
+    app.listen(PORT, () => {
+      console.log(
+        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error('Failed to start the server:', error);
+    process.exit(1);
   }
-  next();
 }
 
 function setupRoutes() {
-  app.use(ensureDbConnected);
-
   app.get('/api', getHomeRoute);
   app.get('/api/destinations', getAllDestinations);
   app.get('/api/destinations/:id', getDestinationById);
@@ -66,6 +62,7 @@ function setupRoutes() {
 async function getHomeRoute(req, res) {
   try {
     const collection = db.collection('travel_destinations_collection');
+    console.log(collection);
     const message = await collection.findOne({});
     res.json({
       message: message
@@ -156,19 +153,4 @@ async function deleteDestination(req, res) {
 function handleError(error, res, message) {
   console.error(`${message}:`, error);
   res.status(500).json({ error: 'Internal Server Error' });
-}
-
-async function startServer() {
-  try {
-    db = await initDb();
-
-    app.listen(PORT, () => {
-      console.log(
-        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
-      );
-    });
-  } catch (error) {
-    console.error('Failed to start the server:', error);
-    process.exit(1);
-  }
 }
