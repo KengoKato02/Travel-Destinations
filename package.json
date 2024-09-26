@@ -33,7 +33,7 @@
     "lint-staged": "^15.2.10"
   },
   "lint-staged": {
-    "*.js": ["biome format --write", "biome lint --write", "eslint --fix"],
+    "*.js": ["biome lint --write", "eslint --fix"],
     "*.{json,md,yml}": ["biome format --write"]
   }
 }
