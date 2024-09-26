@@ -1,11 +1,16 @@
 import cors from 'cors';
 import express from 'express';
-import { ObjectId } from 'mongodb';
 
-/* eslint-disable import-x/extensions */
+import {
+  getHomeRoute,
+  getAllDestinations,
+  getDestinationById,
+  createDestination,
+  updateDestination,
+  deleteDestination
+} from './controllers/destinations.js';
 import { config } from './db/config.js';
 import { connectToDatabase } from './db/db.js';
-/* eslint-enable import-x/extensions */
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,166 +54,20 @@ async function startServer() {
 }
 
 function setupRoutes() {
-  app.get('/api/v1', getHomeRoute);
-  app.get('/api/v1/destinations', getAllDestinations);
-  app.get('/api/v1/destinations/:id', getDestinationById);
-  app.post('/api/v1/destinations', createDestination);
-  app.put('/api/v1/destinations/:id', updateDestination);
-  app.delete('/api/v1/destinations/:id', deleteDestination);
-}
-
-async function getHomeRoute(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const message = await collection.findOne({});
-    res.json({
-      message: message
-        ? message.name
-        : 'Welcome to the Travel Destinations Express API!'
-    });
-  } catch (error) {
-    handleError(error, res, 'Error in home route');
-  }
-}
-
-async function getAllDestinations(req, res) {
-  try {
-    const collection = db.collection('Destination');
-    const filters = req.query;
-
-    const query = Object.keys(filters).length ? getFilterQuery(filters) : {};
-
-    const destinations = await collection.find(query).toArray();
-
-    if (destinations.length === 0) {
-      return res.status(404).json({ message: 'No destinations found' });
-    }
-
-    res.status(200).json(destinations);
-  } catch (error) {
-    handleError(error, res, 'Error fetching destinations');
-  }
-}
-
-async function getDestinationById(req, res) {
-  try {
-    const collection = db.collection('Destination');
-
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid destination ID' });
-    }
-    const destinationID = new ObjectId(req.params.id);
-    const destination = await collection.findOne({ _id: destinationID });
-
-    if (!destination) {
-      return res.status(404).json({ error: 'Destination not found' });
-    }
-
-    res.status(200).json(destination);
-  } catch (error) {
-    handleError(error, res, 'Error fetching destination');
-  }
-}
-
-async function createDestination(req, res) {
-  try {
-    const collection = db.collection('Destination');
-    const newDestination = req.body;
-
-    const { Title, DateFrom, DateTo, PictureURL, Country } = newDestination;
-
-    if (!Title || !DateFrom || !DateTo || !PictureURL || !Country) {
-      return res.status(400).json({ error: 'All fields required are not met' });
-    }
-
-    const result = await collection.insertOne(newDestination);
-
-    res.status(201).json({ ...newDestination, _id: result.insertedId });
-  } catch (error) {
-    handleError(error, res, 'Error creating destination');
-  }
-}
-
-async function updateDestination(req, res) {
-  try {
-    const collection = db.collection('Destination');
-    const updatedDestination = req.body;
-
-    const { Title, DateFrom, DateTo, PictureURL, Country } = updatedDestination;
-
-    if (!Title || !DateFrom || !DateTo || !PictureURL || !Country) {
-      return res.status(400).json({ error: 'All fields required are not met' });
-    }
-
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid destination ID' });
-    }
-
-    const result = await collection.findOneAndUpdate(
-      { _id: new ObjectId(req.params.id) },
-      { $set: updatedDestination },
-      { returnDocument: 'after' }
-    );
-
-    res.status(200).json(result.value);
-  } catch (error) {
-    handleError(error, res, 'Error updating destination');
-  }
-}
-
-async function deleteDestination(req, res) {
-  try {
-    const collection = db.collection('Destination');
-
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid destination ID' });
-    }
-
-    const result = await collection.deleteOne({
-      _id: new ObjectId(req.params.id)
-    });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Destination not found' });
-    }
-
-    res.status(204).send();
-  } catch (error) {
-    handleError(error, res, 'Error deleting destination');
-  }
-}
-
-function handleError(error, res, message) {
-  console.error(`${message}:`, error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
-
-function getFilterQuery(filters) {
-  const query = {};
-
-  const { name, location, travelDateFrom, travelDateTo, hasDescription } =
-    filters;
-
-  if (name) {
-    query.name = name;
-  }
-  if (location) {
-    query.location = location;
-  }
-
-  if (travelDateFrom || travelDateTo) {
-    query.$and = [];
-    if (travelDateFrom) {
-      query.$and.push({ travelDateFrom: { $gte: travelDateFrom } });
-    }
-    if (travelDateTo) {
-      query.$and.push({ travelDateTo: { $lte: travelDateTo } });
-    }
-  }
-
-  if (hasDescription) {
-    query.description = { $exists: hasDescription.trim() === 'true' };
-  }
-
-  return query;
+  app.get('/api/v1', (req, res) => getHomeRoute(req, res, db));
+  app.get('/api/v1/destinations', (req, res) =>
+    getAllDestinations(req, res, db)
+  );
+  app.get('/api/v1/destinations/:id', (req, res) =>
+    getDestinationById(req, res, db)
+  );
+  app.post('/api/v1/destinations', (req, res) =>
+    createDestination(req, res, db)
+  );
+  app.put('/api/v1/destinations/:id', (req, res) =>
+    updateDestination(req, res, db)
+  );
+  app.delete('/api/v1/destinations/:id', (req, res) =>
+    deleteDestination(req, res, db)
+  );
 }

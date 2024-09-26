@@ -18,7 +18,8 @@ const config = [
     },
     rules: {
       'n/no-process-env': 'off',
-      'no-console': 'off'
+      'no-console': 'off',
+      'import-x/extensions': 'off'
     }
   }
 ];
