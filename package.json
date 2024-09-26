@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "format": "biome format . --write",
+    "biome-lint": "biome lint --write",
     "start:api": "NODE_ENV=production pnpm --filter=api start",
     "start:web": "pnpm --filter=web start",
     "start": "cross-env NODE_ENV=production pnpm --stream -r run start",
