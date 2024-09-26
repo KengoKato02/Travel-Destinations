@@ -13,13 +13,13 @@ This initial version of the ER diagram for the Travel Destinations project meets
 ### V2 (For mongo : No-Normlaization)
 ![ER Diagram V2](/assets/ER-Diagram-v2.png)
 
-This second version without normalization to be implmented within our final hand-in 
+The second version of the ER diagram is designed for MongoDB without normalization. This version is intended to be implemented within our final submission. The digram shows a one to many for users to trips, and a many to many for the trips to destinations. The destinations array in the trips table also holds an array of destination_id's 
 
 ### V3 (For SQL : Normalized)
 
 ![ER Diagram V3](/assets/ER-Diagram-v3.png)
 
-This the third version 
+The third version of the ER diagram is tailored for SQL databases with normalization considerations. This version includes normalized tables to reduce redundancy and improve data integrity. It hold similar strucutre to v2 but introduces a join table called `TripDestinations` that contains `trip_id` and `destination_id` to establish a many-to-many relationship between trips and destinations.
 
 ## Project Structure
 
