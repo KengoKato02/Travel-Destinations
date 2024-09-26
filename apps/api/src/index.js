@@ -33,10 +33,11 @@ export default app;
 function setupMiddleware() {
   app.use(
     cors({
-      origin:
-        config.isProduction === 'production'
-          ? ['https://travel-destinations-mu.vercel.app/']
-          : ['http://localhost:8080', 'http://127.0.0.1:8080'],
+      origin: [
+        'https://travel-destinations-mu.vercel.app/',
+        'http://localhost:8080',
+        'http://127.0.0.1:8080'
+      ],
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       allowedHeaders: ['Content-Type']
     })
