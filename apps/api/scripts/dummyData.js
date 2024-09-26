@@ -11,10 +11,9 @@ export async function generateDummyUsers(db) {
 
   for (let range = 0; range < NUM_USERS; range++) {
     users.push({
-      UserID: faker.string.uuid(),
-      Username: faker.internet.userName(),
-      Password: faker.internet.password(),
-      Email: faker.internet.email()
+      username: faker.internet.userName(),
+      password: faker.internet.password(),
+      email: faker.internet.email()
     });
   }
   await userCollection.insertMany(users);
@@ -26,13 +25,12 @@ export async function generateDummyDestinations(db) {
 
   for (let range = 0; range < NUM_DESTINATIONS; range++) {
     destinations.push({
-      DestinationID: faker.string.uuid(),
-      Title: faker.location.city(),
-      DateFrom: faker.date.past(),
-      DateTo: faker.date.future(),
-      Description: faker.lorem.paragraph(),
-      PictureURL: faker.image.url(),
-      Country: faker.location.country()
+      title: faker.location.city(),
+      description: faker.lorem.paragraph(),
+      start_date: faker.date.past(),
+      end_date: faker.date.future(),
+      image_url: faker.image.url(),
+      country: faker.location.country()
     });
   }
   await destinationCollection.insertMany(destinations);

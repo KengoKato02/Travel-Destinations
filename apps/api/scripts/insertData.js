@@ -1,8 +1,6 @@
-/* eslint-disable import-x/extensions */
 import { connectToDatabase } from '../src/db/db.js';
 
 import { generateDummyUsers, generateDummyDestinations } from './dummyData.js';
-/* eslint-enable import-x/extensions */
 
 async function clearCollection(db, collectionName) {
   const collection = db.collection(collectionName);
