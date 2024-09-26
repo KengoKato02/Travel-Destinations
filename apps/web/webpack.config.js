@@ -46,10 +46,10 @@ module.exports = (env, argv) => {
         patterns: [{ from: 'src/icons', to: 'icons' }]
       }),
       new webpack.DefinePlugin({
-        'process.env.API_URL': stringify(
+        'process.env.API_BASE_URL': stringify(
           isProduction
-            ? 'https://travel-destinations-api.vercel.app/api'
-            : 'http://localhost:3000/api'
+            ? 'https://travel-destinations-api.vercel.app/api/v1'
+            : 'http://localhost:3000/api/v1'
         )
       })
     ],

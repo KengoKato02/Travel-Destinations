@@ -1,10 +1,10 @@
 import { stringify } from 'safe-stable-stringify';
 
-const { API_URL } = process.env;
+const { API_BASE_URL } = process.env;
 
 export async function fetchMessage() {
   try {
-    const response = await fetch(`${API_URL}`);
+    const response = await fetch(`${API_BASE_URL}`);
     if (!response.ok) {
       throw new Error('Failed to fetch message');
     }
@@ -16,10 +16,17 @@ export async function fetchMessage() {
 
 export async function fetchDestinations() {
   try {
-    const response = await fetch(`${API_URL}/destinations`);
+    const response = await fetch(`${API_BASE_URL}/destinations`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
     if (!response.ok) {
       throw new Error('Failed to fetch destinations');
     }
+
     return await response.json();
   } catch (error) {
     throw new Error(error.message);
@@ -28,7 +35,7 @@ export async function fetchDestinations() {
 
 export async function createDestination(destinationData) {
   try {
-    const response = await fetch(`${API_URL}/destinations`, {
+    const response = await fetch(`${API_BASE_URL}/destinations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

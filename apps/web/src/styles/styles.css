@@ -99,7 +99,10 @@ body {
   border-bottom: 2px solid orangered;
 }
 .destination__image {
-  width: 200px;
+  max-width: 200px; 
+  max-height: 150px;
+  width: 100%; 
+  height: auto; 
   border-radius: 3px;
 }
 .destination__content {
