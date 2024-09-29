@@ -1,23 +1,29 @@
 import { MongoClient } from 'mongodb';
 
-let db;
+let client;
+let clientPromise;
 
 export async function connectToDatabase() {
-  const uri = process.env.MONGODB_URI;
-  const client = new MongoClient(uri, {
-    useUnifiedTopology: true
-  });
+  if (!client) {
+    const uri = process.env.MONGODB_URI;
 
-  if (!db) {
-    try {
-      await client.connect();
-      db = client.db(process.env.MONGODB_DB_NAME);
-      console.log('Connected to MongoDB');
-    } catch (error) {
-      console.error('Database connection error:', error);
-      throw error;
-    }
+    client = new MongoClient(uri, {
+      useUnifiedTopology: true,
+      minPoolSize: 5,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 50000
+    });
+
+    clientPromise = client.connect();
   }
 
-  return db;
+  try {
+    await clientPromise;
+    const db = client.db(process.env.MONGODB_DB_NAME);
+    console.log('Reusing MongoDB connection');
+    return db;
+  } catch (error) {
+    console.error('Database connection error:', error);
+    throw error;
+  }
 }
