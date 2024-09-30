@@ -1,14 +1,15 @@
-import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
+
+import Destination from '../schemas/Destination.js';
 
 function handleError(error, res, message) {
   console.error(`${message}:`, error);
-  res.status(500).json({ error: 'Internal Server Error' });
+  res.status(500).json({ error: `Internal Server Error. ${error}` });
 }
 
-export async function getHomeRoute(req, res, db) {
+export async function getHomeRoute(res) {
   try {
-    const collection = db.collection('travel_destinations_collection');
-    const message = await collection.findOne({});
+    const message = await Destination.findOne({});
     res.json({
       message: message
         ? message.name
@@ -19,13 +20,9 @@ export async function getHomeRoute(req, res, db) {
   }
 }
 
-export async function getAllDestinations(req, res, db) {
+export async function getAllDestinations(res) {
   try {
-    const collection = db.collection('Destination');
-    const filters = req.query;
-
-    const query = Object.keys(filters).length ? getFilterQuery(filters) : {};
-    const destinations = await collection.find(query).toArray();
+    const destinations = await Destination.find({}).lean();
 
     if (destinations.length === 0) {
       return res.status(404).json({ message: 'No destinations found' });
@@ -37,15 +34,16 @@ export async function getAllDestinations(req, res, db) {
   }
 }
 
-export async function getDestinationById(req, res, db) {
+// Get a destination by ID
+export async function getDestinationById(req, res) {
   try {
-    const collection = db.collection('Destination');
+    const destinationID = req.params.id;
 
-    if (!ObjectId.isValid(req.params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(destinationID)) {
       return res.status(400).json({ error: 'Invalid destination ID' });
     }
-    const destinationID = new ObjectId(req.params.id);
-    const destination = await collection.findOne({ _id: destinationID });
+
+    const destination = await Destination.findById(destinationID).lean();
 
     if (!destination) {
       return res.status(404).json({ error: 'Destination not found' });
@@ -57,63 +55,62 @@ export async function getDestinationById(req, res, db) {
   }
 }
 
-export async function createDestination(req, res, db) {
+// Create a new destination
+export async function createDestination(req, res) {
   try {
-    const collection = db.collection('Destination');
-    const newDestination = req.body;
+    const destination = new Destination({
+      title: req.body.title,
+      description: req.body.description,
+      start_date: req.body.start_date,
+      end_date: req.body.end_date,
+      image_url: req.body.image_url,
+      country: req.body.country
+    });
 
-    const { Title, DateFrom, DateTo, PictureURL, Country } = newDestination;
-
-    if (!Title || !DateFrom || !DateTo || !PictureURL || !Country) {
-      return res.status(400).json({ error: 'All fields required are not met' });
-    }
-
-    const result = await collection.insertOne(newDestination);
-
-    res.status(201).json({ ...newDestination, _id: result.insertedId });
+    const result = await destination.save();
+    res.status(201).json(result);
   } catch (error) {
     handleError(error, res, 'Error creating destination');
   }
 }
 
-export async function updateDestination(req, res, db) {
+// Update an existing destination
+export async function updateDestination(req, res) {
   try {
-    const collection = db.collection('Destination');
-    const updatedDestination = req.body;
+    const destinationID = req.params.id;
 
-    const { Title, DateFrom, DateTo, PictureURL, Country } = updatedDestination;
-
-    if (!Title || !DateFrom || !DateTo || !PictureURL || !Country) {
-      return res.status(400).json({ error: 'All fields required are not met' });
-    }
-
-    if (!ObjectId.isValid(req.params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(destinationID)) {
       return res.status(400).json({ error: 'Invalid destination ID' });
     }
 
-    const result = await collection.findOneAndUpdate(
-      { _id: new ObjectId(req.params.id) },
-      { $set: updatedDestination },
-      { returnDocument: 'after' }
-    );
+    const updatedDestination = req.body;
 
-    res.status(200).json(result.value);
+    const destination = await Destination.findByIdAndUpdate(
+      destinationID,
+      { $set: updatedDestination },
+      { new: true, runValidators: true } // Return updated document, validate changes
+    ).lean();
+
+    if (!destination) {
+      return res.status(404).json({ error: 'Destination not found' });
+    }
+
+    res.status(200).json(destination);
   } catch (error) {
     handleError(error, res, 'Error updating destination');
   }
 }
 
-export async function deleteDestination(req, res, db) {
+// Delete a destination
+export async function deleteDestination(req, res) {
   try {
-    const collection = db.collection('Destination');
+    const destinationID = req.params.id;
 
-    if (!ObjectId.isValid(req.params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(destinationID)) {
       return res.status(400).json({ error: 'Invalid destination ID' });
     }
 
-    const result = await collection.deleteOne({
-      _id: new ObjectId(req.params.id)
-    });
+    const result = await Destination.deleteOne({ _id: destinationID });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'Destination not found' });
@@ -123,25 +120,4 @@ export async function deleteDestination(req, res, db) {
   } catch (error) {
     handleError(error, res, 'Error deleting destination');
   }
-}
-
-function getFilterQuery(filters) {
-  const query = {};
-  const { name, location, travelDateFrom, travelDateTo, hasDescription } =
-    filters;
-
-  if (name) { query.name = name; }
-  if (location) { query.location = location; }
-
-  if (travelDateFrom || travelDateTo) {
-    query.$and = [];
-    if (travelDateFrom) { query.$and.push({ travelDateFrom: { $gte: travelDateFrom } }); }
-    if (travelDateTo) { query.$and.push({ travelDateTo: { $lte: travelDateTo } }); }
-  }
-
-  if (hasDescription) {
-    query.description = { $exists: hasDescription.trim() === 'true' };
-  }
-
-  return query;
 }
