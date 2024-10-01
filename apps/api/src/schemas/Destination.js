@@ -22,7 +22,7 @@ const destinationSchema = new mongoose.Schema({
   },
   image_url: {
     type: String,
-    required: true,
+    required: false,
     match: /^https?:\/\/.+/
   },
   country: {
@@ -32,4 +32,5 @@ const destinationSchema = new mongoose.Schema({
 });
 
 const Destination = mongoose.model('Destination', destinationSchema);
+
 export default Destination;
