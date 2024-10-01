@@ -36,7 +36,8 @@ config.push({
     parser: htmlParser
   },
   rules: {
-    ...htmlPlugin.default.configs.extended
+    ...htmlPlugin.default.configs.extended,
+    'spaced-comment': 'off'
   }
 });
 

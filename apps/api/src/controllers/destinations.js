@@ -130,13 +130,21 @@ function getFilterQuery(filters) {
   const { name, location, travelDateFrom, travelDateTo, hasDescription } =
     filters;
 
-  if (name) { query.name = name; }
-  if (location) { query.location = location; }
+  if (name) {
+    query.name = name;
+  }
+  if (location) {
+    query.location = location;
+  }
 
   if (travelDateFrom || travelDateTo) {
     query.$and = [];
-    if (travelDateFrom) { query.$and.push({ travelDateFrom: { $gte: travelDateFrom } }); }
-    if (travelDateTo) { query.$and.push({ travelDateTo: { $lte: travelDateTo } }); }
+    if (travelDateFrom) {
+      query.$and.push({ travelDateFrom: { $gte: travelDateFrom } });
+    }
+    if (travelDateTo) {
+      query.$and.push({ travelDateTo: { $lte: travelDateTo } });
+    }
   }
 
   if (hasDescription) {
