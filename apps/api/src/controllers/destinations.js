@@ -20,7 +20,7 @@ export async function getHomeRoute(res) {
   }
 }
 
-export async function getAllDestinations(res) {
+export async function getAllDestinations(req, res) {
   try {
     const destinations = await Destination.find({}).lean();
 
