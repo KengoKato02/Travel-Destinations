@@ -1,15 +1,14 @@
-import mongoose from 'mongoose';
-
-import User from '../schemas/User.js';
+import { ObjectId } from 'mongodb';
 
 function handleError(error, res, message) {
   console.error(`${message}:`, error);
-  res.status(500).json({ error: `Internal Server Error. ${error}` });
+  res.status(500).json({ error: 'Internal Server Error' });
 }
 
-export async function getAllUsers(req, res) {
+export async function getAllUsers(req, res, db) {
   try {
-    const users = await User.find({});
+    const collection = db.collection('User');
+    const users = await collection.find({}).toArray();
 
     if (users.length === 0) {
       return res.status(404).json({ message: 'No users found' });
@@ -21,13 +20,15 @@ export async function getAllUsers(req, res) {
   }
 }
 
-export async function getUserById(req, res) {
+export async function getUserById(req, res, db) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const collection = db.collection('User');
+
+    if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-
-    const user = await User.findById(req.params.id);
+    const userId = new ObjectId(req.params.id);
+    const user = await collection.findOne({ _id: userId });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -39,62 +40,67 @@ export async function getUserById(req, res) {
   }
 }
 
-export async function createUser(req, res) {
+export async function createUser(req, res, db) {
   try {
-    const { username, password, email } = req.body;
+    const collection = db.collection('User');
+    const newUser = req.body;
 
-    if (!username || !password || !email) {
+    const { Username, Password, Email } = newUser;
+
+    if (!Username || !Password || !Email) {
       return res
         .status(400)
         .json({ error: 'All fields are required (Username, Password, Email)' });
     }
 
-    const newUser = new User({ username, password, email });
-    const result = await newUser.save();
+    const result = await collection.insertOne(newUser);
 
-    res.status(201).json(result);
+    res.status(201).json({ ...newUser, _id: result.insertedId });
   } catch (error) {
     handleError(error, res, 'Error creating user');
   }
 }
 
-export async function updateUser(req, res) {
+export async function updateUser(req, res, db) {
   try {
-    const { username, password, email } = req.body;
+    const collection = db.collection('User');
+    const updatedUser = req.body;
 
-    if (!username || !password || !email) {
+    const { Username, Password, Email } = updatedUser;
+
+    if (!Username || !Password || !Email) {
       return res
         .status(400)
         .json({ error: 'All fields are required (Username, Password, Email)' });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { username, password, email },
-      { new: true, runValidators: true }
+    const result = await collection.findOneAndUpdate(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updatedUser },
+      { returnDocument: 'after' }
     );
 
-    if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.status(200).json(updatedUser);
+    res.status(200).json(result.value);
   } catch (error) {
     handleError(error, res, 'Error updating user');
   }
 }
 
-export async function deleteUser(req, res) {
+export async function deleteUser(req, res, db) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const collection = db.collection('User');
+
+    if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    const result = await User.deleteOne({ _id: req.params.id });
+    const result = await collection.deleteOne({
+      _id: new ObjectId(req.params.id)
+    });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'User not found' });
