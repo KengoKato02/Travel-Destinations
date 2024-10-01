@@ -19,7 +19,9 @@ const config = [
     rules: {
       'n/no-process-env': 'off',
       'no-console': 'off',
-      'import-x/extensions': 'off'
+      'import-x/extensions': 'off',
+      'import-x/order': 'off',
+      'max-statements': 'off',
     }
   }
 ];
@@ -36,7 +38,7 @@ config.push({
     parser: htmlParser
   },
   rules: {
-    ...htmlPlugin.default.configs.extended
+    ...htmlPlugin.default.configs.extended,
   }
 });
 

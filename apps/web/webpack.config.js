@@ -1,15 +1,28 @@
 const path = require('node:path');
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 const stringify = require('safe-stable-stringify');
+
 const webpack = require('webpack');
+
+const glob = require('glob');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
+  const htmlPages = glob.sync('./src/pages/**/**/*.html');
+
+  const htmlPlugins = htmlPages.map((filePath) => new HtmlWebpackPlugin({
+      template: filePath,
+      filename: path.relative('./src/pages', filePath),
+      inject: true
+    }));
+
   return {
-    entry: './src/javascript/app.js',
+    entry: './src/app.js',
     output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
@@ -29,21 +42,14 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader']
+          use: ['style-loader', 'css-loader', 'postcss-loader']
         }
       ]
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        template: './src/html/index.html',
-        filename: 'index.html'
-      }),
-      new HtmlWebpackPlugin({
-        template: './src/html/new-destination.html',
-        filename: 'new-destination.html'
-      }),
+      ...htmlPlugins,
       new CopyWebpackPlugin({
-        patterns: [{ from: 'src/icons', to: 'icons' }]
+        patterns: [{ from: 'public/icons', to: 'icons' }]
       }),
       new webpack.DefinePlugin({
         'process.env.API_BASE_URL': stringify(
@@ -61,17 +67,7 @@ module.exports = (env, argv) => {
       compress: true,
       port: 8080,
       hot: true,
-      historyApiFallback: true,
-      devMiddleware: {
-        writeToDisk: true
-      },
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods':
-          'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-        'Access-Control-Allow-Headers':
-          'X-Requested-With, content-type, Authorization'
-      }
+      historyApiFallback: true
     },
     mode: isProduction ? 'production' : 'development'
   };
