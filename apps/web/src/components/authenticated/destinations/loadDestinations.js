@@ -1,7 +1,11 @@
-import { fetchDestinations } from '../../utils/api.js';
+import { fetchDestinations } from '../../../utils/api.js';
 
 export const loadDestinations = async () => {
   const destinationsList = document.getElementById('destinationsList');
+
+  if (!destinationsList) {
+    return;
+  }
 
   try {
     const destinations = await fetchDestinations();

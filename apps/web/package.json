@@ -22,6 +22,7 @@
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "glob": "^11.0.0",
+    "mini-css-extract-plugin": "^2.9.1",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
     "safe-stable-stringify": "^2.5.0",

@@ -4,6 +4,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const stringify = require('safe-stable-stringify');
 
 const webpack = require('webpack');
@@ -15,11 +17,14 @@ module.exports = (env, argv) => {
 
   const htmlPages = glob.sync('./src/pages/**/**/*.html');
 
-  const htmlPlugins = htmlPages.map((filePath) => new HtmlWebpackPlugin({
-      template: filePath,
-      filename: path.relative('./src/pages', filePath),
-      inject: true
-    }));
+  const htmlPlugins = htmlPages.map(
+    (filePath) =>
+      new HtmlWebpackPlugin({
+        template: filePath,
+        filename: path.relative('./src/pages', filePath),
+        inject: true
+      })
+  );
 
   return {
     entry: './src/app.js',
@@ -42,11 +47,14 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader', 'postcss-loader']
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
         }
       ]
     },
     plugins: [
+      new MiniCssExtractPlugin({
+        filename: '[name].css'
+      }),
       ...htmlPlugins,
       new CopyWebpackPlugin({
         patterns: [{ from: 'public/icons', to: 'icons' }]
