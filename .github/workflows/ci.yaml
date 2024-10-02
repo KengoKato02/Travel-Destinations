@@ -2,11 +2,15 @@ name: CI
 
 on:
   push:
+    tags:
+      - '*'
     branches:
       - main
       - production
   workflow_dispatch:
     secrets:
+      GIT_TOKEN:
+        required: true
       VERCEL_TOKEN:
         required: true
       VERCEL_ORG_ID:
