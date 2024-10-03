@@ -2,8 +2,13 @@ import mongoose from 'mongoose';
 
 import User from '../schemas/User.js';
 
+import jwt from 'jsonwebtoken';
+
+import bcrypt from 'bcrypt';
+
 function handleError(error, res, message) {
   console.error(`${message}:`, error);
+
   res.status(500).json({ error: `Internal Server Error. ${error}` });
 }
 
@@ -41,20 +46,81 @@ export async function getUserById(req, res) {
 
 export async function createUser(req, res) {
   try {
-    const { username, password, email, isAdmin } = req.body;
+    const { username, password, email } = req.body;
 
-    if (!username || !password || !email || !isAdmin) {
+    if (!username || !password || !email) {
       return res
         .status(400)
         .json({ error: 'All fields are required (Username, Password, Email)' });
     }
 
-    const newUser = new User({ username, password, email, isAdmin });
-    const result = await newUser.save();
+    const existingUser = await User.findOne({ email: req.body.email });
 
-    res.status(201).json(result);
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ errors: { email: 'Email already exists' } });
+    }
+
+    const newUser = await User.create(req.body);
+
+    const token = jwt.sign(
+      { user: newUser._id, email: newUser.email, isAdmin: newUser.isAdmin },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d'
+      }
+    );
+
+    res.status(201).json({
+      user: {
+        _id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        isAdmin: newUser.isAdmin
+      },
+      token
+    });
   } catch (error) {
-    handleError(error, res, 'Error creating user');
+    handleError(error, res, 'Error signing up');
+  }
+}
+
+export async function login(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (passwordMatch) {
+        const token = jwt.sign(
+          { user: user._id, email: user.email, isAdmin: user.isAdmin },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: '1h'
+          }
+        );
+
+        res.status(200).json({
+          user: {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            isAdmin: user.isAdmin
+          },
+          token
+        });
+      } else {
+        return res.status(400).json({ message: 'Incorrect password' });
+      }
+    } else {
+      return res.status(400).json({ message: 'No user found with this email' });
+    }
+  } catch (error) {
+    res.status(500).json(error, res, 'Login has failed');
   }
 }
 
