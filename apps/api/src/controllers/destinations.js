@@ -22,7 +22,7 @@ export async function getHomeRoute(res) {
 
 export async function getAllDestinations(req, res) {
   try {
-    const destinations = await Destination.find({}).lean();
+    const destinations = await Destination.find({});
 
     if (destinations.length === 0) {
       return res.status(404).json({ message: 'No destinations found' });

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "cross-env NODE_ENV=production webpack serve --mode production",
-    "dev": "NODE_ENV=development webpack serve --mode development",
+    "dev": "cross-env NODE_ENV=development webpack serve --mode development",
     "build": "webpack --mode production"
   },
   "devDependencies": {
