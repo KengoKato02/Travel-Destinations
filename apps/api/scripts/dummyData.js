@@ -50,7 +50,11 @@ export async function generateDummyTrips() {
 
     const tripDestinations = [];
     const numberOfDestinations = Math.floor(Math.random() * 3) + 1;
-    for (let startNumber = 0; i < numberOfDestinations; startNumber++) {
+    for (
+      let startNumber = 0;
+      startNumber < numberOfDestinations;
+      startNumber++
+    ) {
       const randomDestination =
         destinations[Math.floor(Math.random() * destinations.length)];
       tripDestinations.push(randomDestination._id);

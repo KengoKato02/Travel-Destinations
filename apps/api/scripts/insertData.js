@@ -15,7 +15,6 @@ async function clearCollection(model) {
 
 async function insertDummyData() {
   try {
-    console.log("Inserting dummy data: ", process.env);
     await connectToDatabase();
 
     // await clearCollection(User);
