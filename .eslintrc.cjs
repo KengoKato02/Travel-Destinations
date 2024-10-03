@@ -11,7 +11,9 @@ module.exports = {
   },
   rules: {
     'n/no-process-env': 'off',
-    'import-x/extensions': 'off'
+    'import-x/extensions': 'off',
+    'import-x/order': 'off',
+    'max-statments': 'off',
   },
   ignorePatterns: ['node_modules', 'dist']
 };

@@ -26,8 +26,6 @@ startServer();
 setupMiddleware();
 setupRoutes();
 
-let db;
-
 export default app;
 
 function setupMiddleware() {
@@ -48,7 +46,7 @@ function setupMiddleware() {
 
 async function startServer() {
   try {
-    db = await connectToDatabase();
+    await connectToDatabase();
 
     app.listen(PORT, () => {
       console.log(
@@ -64,27 +62,23 @@ async function startServer() {
 function setupRoutes() {
   app.options('*', cors());
   // DESTINATION ROUTES
-  app.get('/api/v1', (req, res) => getHomeRoute(req, res, db));
-  app.get('/api/v1/destinations', (req, res) =>
-    getAllDestinations(req, res, db)
-  );
+  app.get('/api/v1', (req, res) => getHomeRoute(req, res));
+  app.get('/api/v1/destinations', (req, res) => getAllDestinations(req, res));
   app.get('/api/v1/destinations/:id', (req, res) =>
-    getDestinationById(req, res, db)
+    getDestinationById(req, res)
   );
-  app.post('/api/v1/destinations', (req, res) =>
-    createDestination(req, res, db)
-  );
+  app.post('/api/v1/destinations', (req, res) => createDestination(req, res));
   app.put('/api/v1/destinations/:id', (req, res) =>
-    updateDestination(req, res, db)
+    updateDestination(req, res)
   );
   app.delete('/api/v1/destinations/:id', (req, res) =>
-    deleteDestination(req, res, db)
+    deleteDestination(req, res)
   );
 
   // USER ROUTES
-  app.get('/api/v1/users', (req, res) => getAllUsers(req, res, db));
-  app.get('/api/v1/users/:id', (req, res) => getUserById(req, res, db));
-  app.post('/api/v1/users', (req, res) => createUser(req, res, db));
-  app.put('/api/v1/users/:id', (req, res) => updateUser(req, res, db));
-  app.delete('/api/v1/users/:id', (req, res) => deleteUser(req, res, db));
+  app.get('/api/v1/users', (req, res) => getAllUsers(req, res));
+  app.get('/api/v1/users/:id', (req, res) => getUserById(req, res));
+  app.post('/api/v1/users', (req, res) => createUser(req, res));
+  app.put('/api/v1/users/:id', (req, res) => updateUser(req, res));
+  app.delete('/api/v1/users/:id', (req, res) => deleteUser(req, res));
 }
