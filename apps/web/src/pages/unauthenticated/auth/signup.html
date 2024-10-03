@@ -1,0 +1,90 @@
+<h1 class="text-xl text-center font-bold mt-5">Create a user</h1>
+<form
+    action=""
+    class="flex flex-col w-3/5 mx-auto"
+    id="signup-form"
+>
+    <label class="flex flex-col p-1">
+        Your username
+        <input
+            type="text"
+            name="username"
+            class="bg-gray-100 rounded-lg p-1"
+            required
+        />
+    </label>
+    <label class="flex flex-col p-1">
+        Your email
+        <input
+            type="email"
+            name="email"
+            class="bg-gray-100 rounded-lg p-1"
+            required
+        />
+    </label>
+    <label class="flex flex-col p-1">
+        Your password
+        <input
+            type="password"
+            name="password"
+            class="bg-gray-100 rounded-lg p-1"
+            required
+        />
+    </label>
+    <button
+        type="submit"
+        class="bg-blue-500 rounded-lg p-1 text-center mt-2 text-white"
+    >
+        Sign up
+    </button>
+    <a
+        class="bg-gray-100 rounded-lg p-1 text-center mt-2 text-gray-500 italic text-sm"
+        href="http://localhost:8080/unauthenticated/auth/login.html"
+        >Already have an account?</a
+    >
+</form>
+
+<script>
+    document
+        .querySelector("#signup-form")
+        .addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const form = document.querySelector("#signup-form");
+            const formData = new FormData(form);
+
+            // Convert FormData to JSON object
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            try {
+                // Send the form data to the local server
+                const response = await fetch(
+                    "http://localhost:3000/api/v1/users",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(formObject), // Convert form data to JSON
+                    }
+                );
+
+                const data = await response.json();
+                console.log(data.error);
+
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error(data);
+                }
+
+                localStorage.setItem("jwt", data.token);
+                alert("User signed up");
+            } catch (error) {
+                console.error(error);
+            }
+        });
+</script>
