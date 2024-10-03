@@ -41,15 +41,15 @@ export async function getUserById(req, res) {
 
 export async function createUser(req, res) {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email, isAdmin } = req.body;
 
-    if (!username || !password || !email) {
+    if (!username || !password || !email || !isAdmin) {
       return res
         .status(400)
         .json({ error: 'All fields are required (Username, Password, Email)' });
     }
 
-    const newUser = new User({ username, password, email });
+    const newUser = new User({ username, password, email, isAdmin });
     const result = await newUser.save();
 
     res.status(201).json(result);
@@ -60,9 +60,9 @@ export async function createUser(req, res) {
 
 export async function updateUser(req, res) {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email, isAdmin } = req.body;
 
-    if (!username || !password || !email) {
+    if (!username || !password || !email || !isAdmin) {
       return res
         .status(400)
         .json({ error: 'All fields are required (Username, Password, Email)' });
@@ -74,7 +74,7 @@ export async function updateUser(req, res) {
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { username, password, email },
+      { username, password, email, isAdmin },
       { new: true, runValidators: true }
     );
 
