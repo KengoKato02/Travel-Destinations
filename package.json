@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "format": "biome format . --write",
     "biome-lint": "biome lint --write",
     "start:api": "NODE_ENV=production pnpm --filter=api start",
@@ -16,11 +16,9 @@
     "build": "pnpm --filter=web build && pnpm --filter=api build"
   },
   "dependencies": {
-    "@faker-js/faker": "^9.0.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.17.1",
-    "mongodb": "^6.9.0"
+    "@html-eslint/eslint-plugin": "0.27.0",
+    "@html-eslint/parser": "0.27.0",
+    "dotenv": "^16.4.5"
   },
   "workspaces": ["apps/*"],
   "author": "",
@@ -30,12 +28,9 @@
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^1.9.1",
-    "@eslint/js": "^8.56.0",
-    "@html-eslint/eslint-plugin": "^0.24.0",
-    "@html-eslint/parser": "^0.24.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.56.0",
-    "eslint-config-extreme": "^1.0.25",
+    "eslint": "9.10.0",
+    "eslint-config-extreme": "1.0.22",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.10"
   },

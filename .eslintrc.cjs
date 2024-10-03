@@ -2,12 +2,12 @@ module.exports = {
   extends: ['extreme'],
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
+    sourceType: 'module'
   },
   env: {
     node: true,
     browser: true,
-    es2021: true,
+    es2021: true
   },
   rules: {
     'n/no-process-env': 'off',
@@ -15,5 +15,5 @@ module.exports = {
     'import-x/order': 'off',
     'max-statments': 'off',
   },
-  ignorePatterns: ['node_modules', 'dist'],
+  ignorePatterns: ['node_modules', 'dist']
 };
