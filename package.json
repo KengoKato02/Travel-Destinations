@@ -22,7 +22,9 @@
     "express": "^4.17.1",
     "mongodb": "^6.9.0"
   },
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "author": "",
   "engines": {
     "node": ">=18.16.1"
@@ -40,7 +42,13 @@
     "lint-staged": "^15.2.10"
   },
   "lint-staged": {
-    "*.js": ["biome format --write", "biome lint --write", "eslint --fix"],
-    "*.{json,md,yml}": ["biome format --write"]
+    "*.js": [
+      "biome format --write",
+      "biome lint --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yml}": [
+      "biome format --write"
+    ]
   }
 }
