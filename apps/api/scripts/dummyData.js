@@ -1,12 +1,14 @@
 import { faker } from '@faker-js/faker';
 
+import Destination from '../src/schemas/Destination.js';
+import User from '../src/schemas/User.js';
+
 faker.locale = 'en';
 
 const NUM_USERS = 5;
 const NUM_DESTINATIONS = 10;
 
-export async function generateDummyUsers(db) {
-  const userCollection = db.collection('User');
+export async function generateDummyUsers() {
   const users = [];
 
   for (let range = 0; range < NUM_USERS; range++) {
@@ -16,11 +18,10 @@ export async function generateDummyUsers(db) {
       email: faker.internet.email()
     });
   }
-  await userCollection.insertMany(users);
+  await User.insertMany(users);
 }
 
-export async function generateDummyDestinations(db) {
-  const destinationCollection = db.collection('Destination');
+export async function generateDummyDestinations() {
   const destinations = [];
 
   for (let range = 0; range < NUM_DESTINATIONS; range++) {
@@ -33,5 +34,5 @@ export async function generateDummyDestinations(db) {
       country: faker.location.country()
     });
   }
-  await destinationCollection.insertMany(destinations);
+  await Destination.insertMany(destinations);
 }

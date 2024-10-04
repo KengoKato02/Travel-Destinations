@@ -1,4 +1,5 @@
 import cors from 'cors';
+
 import express from 'express';
 
 import {
@@ -9,21 +10,28 @@ import {
   updateDestination,
   deleteDestination
 } from './controllers/destinations.js';
+
 import {
   getAllUsers,
-  getUserById,
-  createUser,
+  getUserByEmail,
   updateUser,
   deleteUser
 } from './controllers/users.js';
+
 import { config } from './db/config.js';
+
 import { connectToDatabase } from './db/db.js';
 
+import { verifyAdmin, verifyToken, login, signup } from './controllers/auth.js';
+
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 startServer();
+
 setupMiddleware();
+
 setupRoutes();
 
 export default app;
@@ -40,7 +48,9 @@ function setupMiddleware() {
       allowedHeaders: ['Content-Type']
     })
   );
+
   app.use(express.json());
+
   app.disable('x-powered-by');
 }
 
@@ -55,30 +65,53 @@ async function startServer() {
     });
   } catch (error) {
     console.error('Failed to start the server:', error);
+
     process.exit(1);
   }
 }
 
 function setupRoutes() {
   app.options('*', cors());
+
   // DESTINATION ROUTES
   app.get('/api/v1', (req, res) => getHomeRoute(req, res));
-  app.get('/api/v1/destinations', (req, res) => getAllDestinations(req, res));
-  app.get('/api/v1/destinations/:id', (req, res) =>
+
+  app.get('/api/v1/destinations', verifyToken, (req, res) =>
+    getAllDestinations(req, res)
+  );
+
+  app.get('/api/v1/destinations/:id', verifyToken, (req, res) =>
     getDestinationById(req, res)
   );
-  app.post('/api/v1/destinations', (req, res) => createDestination(req, res));
-  app.put('/api/v1/destinations/:id', (req, res) =>
+
+  app.post('/api/v1/destinations', verifyToken, verifyAdmin, (req, res) =>
+    createDestination(req, res)
+  );
+
+  app.put('/api/v1/destinations/:id', verifyToken, verifyAdmin, (req, res) =>
     updateDestination(req, res)
   );
-  app.delete('/api/v1/destinations/:id', (req, res) =>
+
+  app.delete('/api/v1/destinations/:id', verifyToken, verifyAdmin, (req, res) =>
     deleteDestination(req, res)
   );
 
   // USER ROUTES
-  app.get('/api/v1/users', (req, res) => getAllUsers(req, res));
-  app.get('/api/v1/users/:id', (req, res) => getUserById(req, res));
-  app.post('/api/v1/users', (req, res) => createUser(req, res));
-  app.put('/api/v1/users/:id', (req, res) => updateUser(req, res));
-  app.delete('/api/v1/users/:id', (req, res) => deleteUser(req, res));
+  app.get('/api/v1/users', verifyToken, (req, res) => getAllUsers(req, res));
+
+  app.get('/api/v1/users/:email', verifyToken, (req, res) =>
+    getUserByEmail(req, res)
+  );
+
+  app.post('/api/v1/auth/signup', (req, res) => signup(req, res));
+
+  app.post('/api/v1/auth/login', (req, res) => login(req, res));
+
+  app.put('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
+    updateUser(req, res)
+  );
+
+  app.delete('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
+    deleteUser(req, res)
+  );
 }

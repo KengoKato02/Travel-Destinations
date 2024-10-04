@@ -2,60 +2,56 @@ import mongoose from 'mongoose';
 
 import Destination from '../schemas/Destination.js';
 
-function handleError(error, res, message) {
-  console.error(`${message}:`, error);
-  res.status(500).json({ error: `Internal Server Error. ${error}` });
-}
+import { handleErrorResponse } from '../utils/errorHandler.js';
 
-export async function getHomeRoute(res) {
+export async function getHomeRoute(req, res) {
   try {
     const message = await Destination.findOne({});
+
     res.json({
       message: message
         ? message.name
         : 'Welcome to the Travel Destinations Express API!'
     });
   } catch (error) {
-    handleError(error, res, 'Error in home route');
+    handleErrorResponse(res, 500, 'Error in home route', error);
   }
 }
 
 export async function getAllDestinations(req, res) {
   try {
-    const destinations = await Destination.find({}).lean();
+    const destinations = await Destination.find({});
 
     if (destinations.length === 0) {
-      return res.status(404).json({ message: 'No destinations found' });
+      return handleErrorResponse(res, 404, 'No destinations found');
     }
 
     res.status(200).json(destinations);
   } catch (error) {
-    handleError(error, res, 'Error fetching destinations');
+    handleErrorResponse(res, 500, 'Error fetching destinations', error);
   }
 }
 
-// Get a destination by ID
 export async function getDestinationById(req, res) {
   try {
     const destinationID = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(destinationID)) {
-      return res.status(400).json({ error: 'Invalid destination ID' });
+      return handleErrorResponse(res, 400, 'Invalid destination ID');
     }
 
     const destination = await Destination.findById(destinationID).lean();
 
     if (!destination) {
-      return res.status(404).json({ error: 'Destination not found' });
+      return handleErrorResponse(res, 404, 'Destination not found');
     }
 
     res.status(200).json(destination);
   } catch (error) {
-    handleError(error, res, 'Error fetching destination');
+    handleErrorResponse(res, 500, 'Error fetching destination', error);
   }
 }
 
-// Create a new destination
 export async function createDestination(req, res) {
   try {
     const destination = new Destination({
@@ -68,56 +64,63 @@ export async function createDestination(req, res) {
     });
 
     const result = await destination.save();
+
     res.status(201).json(result);
   } catch (error) {
-    handleError(error, res, 'Error creating destination');
+    // Handling Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      return handleErrorResponse(res, 400, 'Validation errors', error);
+    }
+
+    handleErrorResponse(res, 500, 'Error creating destination', error);
   }
 }
 
-// Update an existing destination
 export async function updateDestination(req, res) {
   try {
     const destinationID = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(destinationID)) {
-      return res.status(400).json({ error: 'Invalid destination ID' });
+      return handleErrorResponse(res, 400, 'Invalid destination ID');
     }
 
-    const updatedDestination = req.body;
-
-    const destination = await Destination.findByIdAndUpdate(
+    const updatedDestination = await Destination.findByIdAndUpdate(
       destinationID,
-      { $set: updatedDestination },
-      { new: true, runValidators: true } // Return updated document, validate changes
+      { $set: req.body },
+      { new: true, runValidators: true } // Enable validation during update
     ).lean();
 
-    if (!destination) {
-      return res.status(404).json({ error: 'Destination not found' });
+    if (!updatedDestination) {
+      return handleErrorResponse(res, 404, 'Destination not found');
     }
 
-    res.status(200).json(destination);
+    res.status(200).json(updatedDestination);
   } catch (error) {
-    handleError(error, res, 'Error updating destination');
+    // Handling Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      return handleErrorResponse(res, 400, 'Validation errors', error);
+    }
+
+    handleErrorResponse(res, 500, 'Error updating destination', error);
   }
 }
 
-// Delete a destination
 export async function deleteDestination(req, res) {
   try {
     const destinationID = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(destinationID)) {
-      return res.status(400).json({ error: 'Invalid destination ID' });
+      return handleErrorResponse(res, 400, 'Invalid destination ID');
     }
 
     const result = await Destination.deleteOne({ _id: destinationID });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Destination not found' });
+      return handleErrorResponse(res, 404, 'Destination not found');
     }
 
     res.status(204).send();
   } catch (error) {
-    handleError(error, res, 'Error deleting destination');
+    handleErrorResponse(res, 500, 'Error deleting destination', error);
   }
 }
