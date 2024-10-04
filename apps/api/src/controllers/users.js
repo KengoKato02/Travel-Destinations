@@ -1,107 +1,84 @@
-import mongoose from 'mongoose';
-
 import User from '../schemas/User.js';
 
-function handleError(error, res, message) {
-  console.error(`${message}:`, error);
-  res.status(500).json({ error: `Internal Server Error. ${error}` });
-}
+import { handleErrorResponse } from '../utils/errorHandler.js';
 
+// Get all users
 export async function getAllUsers(req, res) {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select('-password -_id'); // Exclude password and _id
 
     if (users.length === 0) {
-      return res.status(404).json({ message: 'No users found' });
+      return handleErrorResponse(res, 404, 'No users found');
     }
 
-    res.status(200).json(users);
+    res.status(200).json(users); // Return users without password and _id
   } catch (error) {
-    handleError(error, res, 'Error fetching users');
+    handleErrorResponse(res, 500, 'Error fetching users', error);
   }
 }
 
-export async function getUserById(req, res) {
+// Get user by email
+export async function getUserByEmail(req, res) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
-    }
+    const { email } = req.params;
 
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ email }).select('-password -_id');
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return handleErrorResponse(res, 404, 'User not found');
     }
 
     res.status(200).json(user);
   } catch (error) {
-    handleError(error, res, 'Error fetching user');
+    handleErrorResponse(res, 500, 'Error fetching user', error);
   }
 }
 
-export async function createUser(req, res) {
-  try {
-    const { username, password, email } = req.body;
-
-    if (!username || !password || !email) {
-      return res
-        .status(400)
-        .json({ error: 'All fields are required (Username, Password, Email)' });
-    }
-
-    const newUser = new User({ username, password, email });
-    const result = await newUser.save();
-
-    res.status(201).json(result);
-  } catch (error) {
-    handleError(error, res, 'Error creating user');
-  }
-}
-
+// Update user
 export async function updateUser(req, res) {
   try {
-    const { username, password, email } = req.body;
+    const { email } = req.params;
 
-    if (!username || !password || !email) {
-      return res
-        .status(400)
-        .json({ error: 'All fields are required (Username, Password, Email)' });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { username, password, email },
-      { new: true, runValidators: true }
-    );
+    const updatedUser = await User.findOneAndUpdate({ email }, req.body, {
+      new: true,
+      runValidators: true
+    });
 
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return handleErrorResponse(res, 404, 'User not found');
     }
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    handleError(error, res, 'Error updating user');
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return handleErrorResponse(
+        res,
+        400,
+        'There was an error with your submission',
+        error
+      );
+    }
+
+    console.log(error);
+
+    handleErrorResponse(res, 500, 'Error updating user', error);
   }
 }
 
+// Delete user
 export async function deleteUser(req, res) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
-    }
+    const { email } = req.params; // Use email instead of user ID
 
-    const result = await User.deleteOne({ _id: req.params.id });
+    const result = await User.deleteOne({ email }); // Delete by email
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return handleErrorResponse(res, 404, 'User not found');
     }
 
     res.status(204).send();
   } catch (error) {
-    handleError(error, res, 'Error deleting user');
+    handleErrorResponse(res, 500, 'Error deleting user', error);
   }
 }

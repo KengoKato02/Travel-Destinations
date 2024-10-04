@@ -11,7 +11,7 @@
     "start:api": "NODE_ENV=production pnpm --filter=api start",
     "start:web": "pnpm --filter=web start",
     "start": "cross-env NODE_ENV=production pnpm --stream -r run start",
-    "dev": "NODE_ENV=development pnpm --stream -r run dev",
+    "dev": "cross-env NODE_ENV=development pnpm --stream -r run dev",
     "prepare": "husky && husky install",
     "build": "pnpm --filter=web build && pnpm --filter=api build"
   },
