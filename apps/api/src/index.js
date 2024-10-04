@@ -13,18 +13,16 @@ import {
 
 import {
   getAllUsers,
-  getUserById,
-  createUser,
+  getUserByEmail,
   updateUser,
-  deleteUser,
-  login
+  deleteUser
 } from './controllers/users.js';
 
 import { config } from './db/config.js';
 
 import { connectToDatabase } from './db/db.js';
 
-import { verifyAdmin, verifyToken } from './controllers/auth.js';
+import { verifyAdmin, verifyToken, login, signup } from './controllers/auth.js';
 
 const app = express();
 
@@ -101,19 +99,19 @@ function setupRoutes() {
   // USER ROUTES
   app.get('/api/v1/users', verifyToken, (req, res) => getAllUsers(req, res));
 
-  app.get('/api/v1/users/:id', verifyToken, (req, res) =>
-    getUserById(req, res)
+  app.get('/api/v1/users/:email', verifyToken, (req, res) =>
+    getUserByEmail(req, res)
   );
 
-  app.post('/api/v1/auth/signup', (req, res) => createUser(req, res));
+  app.post('/api/v1/auth/signup', (req, res) => signup(req, res));
 
   app.post('/api/v1/auth/login', (req, res) => login(req, res));
 
-  app.put('/api/v1/users/:id', verifyToken, verifyAdmin, (req, res) =>
+  app.put('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
     updateUser(req, res)
   );
 
-  app.delete('/api/v1/users/:id', verifyToken, verifyAdmin, (req, res) =>
+  app.delete('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
     deleteUser(req, res)
   );
 }

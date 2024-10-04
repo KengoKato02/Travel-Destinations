@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: [true, 'Username is required'],
-      unique: true,
+      unique: [true, 'User with this username already exists'],
       minlength: [3, 'Username must be at least 3 characters'],
       maxlength: [30, 'Username cannot exceed 30 characters'],
       trim: true
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true,
+      unique: true['User with this email already exists'],
       match: [
         /* eslint-disable-next-line sonarjs/single-char-in-character-classes */
         /^[\w.%+-]+@[\w-]+\.[\w]{2,}$/i,
