@@ -28,6 +28,8 @@ import {
 import { config } from "./db/config.js";
 import { connectToDatabase } from "./db/db.js";
 
+import { validateObjectId } from "./middleware/validateObjectId.js";
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -95,9 +97,9 @@ function setupRoutes() {
 
   // TRIP ROUTES
   app.get("/api/v3/trips", (req, res) => getAllTrips(req, res));
-  app.get("/api/v3/trips/:id", (req, res) => getTripById(req, res));
+  app.get("/api/v3/trips/:id", validateObjectId("id"), getTripById);
   app.post("/api/v3/trips", (req, res) => createTrip(req, res));
-  app.put("/api/v3/trips/:id", (req, res) => updateTrip(req, res));
-  app.delete("/api/v3/trips/:id", (req, res) => deleteTrip(req, res));
-  app.get("/api/v3/trips/user/:id", (req, res) => getTripsByUser(req, res));
+  app.put("/api/v3/trips/:id", validateObjectId("id"), updateTrip);
+  app.delete("/api/v3/trips/:id", validateObjectId("id"), deleteTrip);
+  app.get("/api/v3/trips/user/:id", validateObjectId("id"), getTripsByUser);
 }

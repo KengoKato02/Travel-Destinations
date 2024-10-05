@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 import Trip from "../schemas/Trip.js";
 import { getUserByEmail } from "./users.js";
 
@@ -8,15 +6,11 @@ function handleError(error, res, message) {
   res.status(500).json({ error: `Internal Server Error. ${error}` });
 }
 
-function validateObjectId(id) {
-  return mongoose.Types.ObjectId.isValid(id);
-}
-
 export const getAllTrips = async (req, res) => {
   try {
-    const trips = await Trip.find({});
+    const trips = await Trip.find({}).lean();
 
-    if (trips.length === 0) {
+    if (!trips.length) {
       return res.status(404).json({ message: "No trips found" });
     }
 
@@ -28,11 +22,8 @@ export const getAllTrips = async (req, res) => {
 
 export const getTripById = async (req, res) => {
   try {
-    if (!validateObjectId(req.params.id)) {
-      return res.status(400).json({ error: "Invalid trip ID" });
-    }
-
-    const trip = await Trip.findById(req.params.id);
+    const { id } = req.params;
+    const trip = await Trip.findById(id).lean();
 
     if (!trip) {
       return res.status(404).json({ error: "Trip not found" });
@@ -74,17 +65,12 @@ export const createTrip = async (req, res) => {
 
 export const deleteTrip = async (req, res) => {
   try {
-    if (!validateObjectId(req.params.id)) {
-      return res.status(400).json({ error: "Invalid trip ID" });
-    }
+    const { id } = req.params;
+    const deletedTrip = await Trip.findByIdAndDelete(id);
 
-    const trip = await Trip.findById(req.params.id);
-
-    if (!trip) {
+    if (!deletedTrip) {
       return res.status(404).json({ error: "Trip not found" });
     }
-
-    await Trip.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ message: "Trip deleted successfully" });
   } catch (error) {
@@ -94,23 +80,28 @@ export const deleteTrip = async (req, res) => {
 
 export const updateTrip = async (req, res) => {
   try {
+    const { id } = req.params;
     const { title, description, destinations, start_date, end_date } = req.body;
 
-    if (!destinations || !start_date || !end_date || !title || !description) {
+    if (!title || !destinations || !start_date || !end_date || !description) {
       return res.status(400).json({
         error:
           "All fields are required (Destinations, Start Date, End Date, Title, Description)",
       });
     }
 
-    if (!validateObjectId(req.params.id)) {
-      return res.status(400).json({ error: "Invalid trip ID" });
+    const updatedTrip = await Trip.findByIdAndUpdate(id, req.body, {
+      new: true,
+      lean: true,
+    });
+
+    if (!updatedTrip) {
+      return res.status(404).json({ error: "Trip not found" });
     }
 
-    const updatedTrip = req.body;
-    await Trip.findByIdAndUpdate(req.params.id, updatedTrip);
-
-    res.status(200).json({ message: "Trip updated successfully" });
+    res
+      .status(200)
+      .json({ message: "Trip updated successfully", trip: updatedTrip });
   } catch (error) {
     handleError(error, res, "Error updating trip");
   }
@@ -118,13 +109,10 @@ export const updateTrip = async (req, res) => {
 
 export const getTripsByUser = async (req, res) => {
   try {
-    if (!validateObjectId(req.params.id)) {
-      return res.status(400).json({ error: "Invalid user ID" });
-    }
+    const { id } = req.params;
+    const trips = await Trip.find({ user_id: id }).lean();
 
-    const trips = await Trip.find({ user_id: req.params.id });
-
-    if (trips.length === 0) {
+    if (!trips.length) {
       return res.status(404).json({ message: "No trips found" });
     }
 
