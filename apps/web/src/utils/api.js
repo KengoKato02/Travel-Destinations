@@ -5,9 +5,11 @@ const { API_BASE_URL } = process.env;
 export async function fetchMessage() {
   try {
     const response = await fetch(`${API_BASE_URL}`);
+
     if (!response.ok) {
       throw new Error('Failed to fetch message');
     }
+
     return await response.json();
   } catch (error) {
     throw new Error(error.message);
@@ -16,7 +18,7 @@ export async function fetchMessage() {
 
 export async function fetchDestinations() {
   try {
-    const response = await fetch(`${API_BASE_URL}/destinations`, {
+    const response = await fetch(`${process.env.API_BASE_URL}/destinations`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -33,7 +35,7 @@ export async function fetchDestinations() {
   }
 }
 
-export async function createDestination(destinationData) {
+export async function postDestination(destinationData) {
   try {
     const response = await fetch(`${API_BASE_URL}/destinations`, {
       method: 'POST',
@@ -42,9 +44,11 @@ export async function createDestination(destinationData) {
       },
       body: stringify(destinationData)
     });
+
     if (!response.ok) {
       throw new Error('Failed to create destination');
     }
+
     return await response.json();
   } catch (error) {
     throw new Error(error.message);
