@@ -22,32 +22,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     body.prepend(navbar);
   }
-
-  const path = window.location.pathname;
-
-  if (path.includes('destinations')) {
-    const { loadDestinations } = await import(
-      './components/authenticated/destinations/loadDestinations.js'
-    );
-
-    loadDestinations();
-  } else if (path.includes('new-destination')) {
-    const { addDestinationForm } = await import(
-      './components/authenticated/destinations/addDestinations.js'
-    );
-
-    addDestinationForm();
-  } else if (path.includes('login')) {
-    const { initLogin } = await import(
-      './components/unauthenticated/auth/login.js'
-    );
-
-    initLogin();
-  } else if (path.includes('signup')) {
-    const { initSignup } = await import(
-      './components/unauthenticated/auth/signup.js'
-    );
-
-    initSignup();
-  }
 });

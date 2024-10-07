@@ -1,11 +1,49 @@
 export function createRouter() {
   const routes = {
-    '/': '/unauthenticated/landing-page.html',
-    '/authenticated/destinations': '/authenticated/destinations.html',
-    '/authenticated/trips': '/authenticated/trips.html',
-    '/authenticated/new-destination': '/authenticated/new-destination.html',
-    '/login': '/unauthenticated/auth/login.html',
-    '/signup': '/unauthenticated/auth/signup.html'
+    '/': {
+      template: '/unauthenticated/landing-page.html',
+      init: null // No specific initialization needed for landing page
+    },
+    '/authenticated/destinations': {
+      template: '/authenticated/destinations.html',
+      init: async () => {
+        const m = await import(
+          './components/authenticated/destinations/loadDestinations.js'
+        );
+
+        return m.loadDestinations();
+      }
+    },
+    '/authenticated/trips': {
+      template: '/authenticated/trips.html',
+      init: null // Assuming no specific initialization for trips page yet
+    },
+    '/authenticated/new-destination': {
+      template: '/authenticated/new-destination.html',
+      init: async () => {
+        const m = await import(
+          './components/authenticated/destinations/addDestinations.js'
+        );
+
+        return m.addDestinationForm();
+      }
+    },
+    '/login': {
+      template: '/unauthenticated/auth/login.html',
+      init: async () => {
+        const m = await import('./components/unauthenticated/auth/login.js');
+
+        return m.initLogin();
+      }
+    },
+    '/signup': {
+      template: '/unauthenticated/auth/signup.html',
+      init: async () => {
+        const m = await import('./components/unauthenticated/auth/signup.js');
+
+        return m.initSignup();
+      }
+    }
   };
 
   async function loadContent(url) {
@@ -19,12 +57,16 @@ export function createRouter() {
 
     const route = routes[path] || routes['/'];
 
-    const content = await loadContent(route);
+    const content = await loadContent(route.template);
 
     const mainContent = document.getElementById('main-content');
 
     if (mainContent) {
       mainContent.innerHTML = content;
+
+      if (route.init) {
+        await route.init();
+      }
     } else {
       console.error('Main content element not found');
     }

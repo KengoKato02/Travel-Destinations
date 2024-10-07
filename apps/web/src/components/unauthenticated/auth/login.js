@@ -1,5 +1,7 @@
 import { stringify } from 'safe-stable-stringify';
 
+import { setUserSession } from '../../../utils/auth.js';
+
 export function initLogin() {
   const loginForm = document.getElementById('loginForm');
 
@@ -33,7 +35,7 @@ export function initLogin() {
         throw new Error(data.message || 'Login failed');
       }
 
-      localStorage.setItem('jwt', data.token);
+      setUserSession(data.user.email, data.user.username, data.token);
 
       alert('Login successful');
 
