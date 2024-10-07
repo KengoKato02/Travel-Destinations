@@ -10,11 +10,13 @@ const tripSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 3,
+    trim: true,
   },
   description: {
     type: String,
-    minlength: 10,
     required: true,
+    minlength: 10,
+    trim: true,
   },
   destinations: [
     {
@@ -30,8 +32,16 @@ const tripSchema = new mongoose.Schema({
   end_date: {
     type: Date,
     required: true,
+    validate: {
+      validator: function (value) {
+        return value > this.start_date;
+      },
+      message: "End date must be after start date.",
+    },
   },
 });
+
+tripSchema.index({ user_id: 1 });
 
 const Trip = mongoose.model("Trip", tripSchema);
 
