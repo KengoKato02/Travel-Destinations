@@ -103,10 +103,6 @@ function setupRoutes() {
     getUserByEmail(req, res)
   );
 
-  app.post('/api/v1/auth/signup', (req, res) => signup(req, res));
-
-  app.post('/api/v1/auth/login', (req, res) => login(req, res));
-
   app.put('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
     updateUser(req, res)
   );
@@ -114,4 +110,9 @@ function setupRoutes() {
   app.delete('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
     deleteUser(req, res)
   );
+
+  // AUTHENTICATION ROUTES
+  app.post('/api/v1/auth/signup', (req, res) => signup(req, res));
+
+  app.post('/api/v1/auth/login', (req, res) => login(req, res));
 }

@@ -7,27 +7,22 @@ import './styles/tailwind.css';
 document.addEventListener('DOMContentLoaded', async () => {
   const { body } = document;
 
-  // Create and append the main content container
   const mainContent = document.createElement('div');
 
   mainContent.id = 'main-content';
 
   body.appendChild(mainContent);
 
-  // Initialize the router
   const router = createRouter();
 
   router.init();
 
-  // Check if the current route is an authenticated route
   if (window.location.pathname.startsWith('/authenticated')) {
-    // Create and append the navbar
     const navbar = createNavbar();
 
     body.prepend(navbar);
   }
 
-  // Determine the current page and load the appropriate script
   const path = window.location.pathname;
 
   if (path.includes('destinations')) {
@@ -42,6 +37,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
     addDestinationForm();
+  } else if (path.includes('login')) {
+    const { initLogin } = await import(
+      './components/unauthenticated/auth/login.js'
+    );
+
+    initLogin();
+  } else if (path.includes('signup')) {
+    const { initSignup } = await import(
+      './components/unauthenticated/auth/signup.js'
+    );
+
+    initSignup();
   }
-  // Add more conditions for other pages as needed
 });
