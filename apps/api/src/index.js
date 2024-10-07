@@ -18,9 +18,20 @@ import {
   deleteUser
 } from './controllers/users.js';
 
+import {
+  getAllTrips,
+  getTripById,
+  createTrip,
+  updateTrip,
+  deleteTrip,
+  getTripsByUser
+} from './controllers/trips.js';
+
 import { config } from './db/config.js';
 
 import { connectToDatabase } from './db/db.js';
+
+import { validateObjectId } from './middleware/validateObjectId.js';
 
 import { verifyAdmin, verifyToken, login, signup } from './controllers/auth.js';
 
@@ -60,7 +71,9 @@ async function startServer() {
 
     app.listen(PORT, () => {
       console.log(
-        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+        `Server running in ${
+          config.isProduction ? 'production' : 'development'
+        } mode on port ${PORT}`
       );
     });
   } catch (error) {
@@ -114,4 +127,17 @@ function setupRoutes() {
   app.delete('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
     deleteUser(req, res)
   );
+
+  // TRIP ROUTES
+  app.get('/api/v1/trips', (req, res) => getAllTrips(req, res));
+
+  app.get('/api/v1/trips/:id', validateObjectId('id'), getTripById);
+
+  app.post('/api/v1/trips', (req, res) => createTrip(req, res));
+
+  app.put('/api/v1/trips/:id', validateObjectId('id'), updateTrip);
+
+  app.delete('/api/v1/trips/:id', validateObjectId('id'), deleteTrip);
+
+  app.get('/api/v1/trips/user/:id', validateObjectId('id'), getTripsByUser);
 }
