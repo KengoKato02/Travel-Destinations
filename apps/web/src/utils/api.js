@@ -35,6 +35,44 @@ export async function fetchDestinations() {
   }
 }
 
+export async function fetchTrips() {
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/trips`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch destinations');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function fetchDestinationsById(id) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch destinations');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 export async function postDestination(destinationData) {
   try {
     const response = await fetch(`${API_BASE_URL}/destinations`, {

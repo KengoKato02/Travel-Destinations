@@ -16,7 +16,11 @@ export function createRouter() {
     },
     '/authenticated/trips': {
       template: '/authenticated/trips.html',
-      init: null // Assuming no specific initialization for trips page yet
+      init: async () => {
+        const m = await import('./components/authenticated/trips/loadTrips.js');
+
+        return m.loadTrips();
+      }
     },
     '/authenticated/new-destination': {
       template: '/authenticated/new-destination.html',
