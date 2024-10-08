@@ -1,13 +1,17 @@
-import { faker } from "@faker-js/faker";
+import { faker } from '@faker-js/faker';
 
-import Destination from "../src/schemas/Destination.js";
-import User from "../src/schemas/User.js";
-import Trip from "../src/schemas/Trip.js";
+import Destination from '../src/schemas/Destination.js';
 
-faker.locale = "en";
+import User from '../src/schemas/User.js';
+
+import Trip from '../src/schemas/Trip.js';
+
+faker.locale = 'en';
 
 const NUM_USERS = 5;
+
 const NUM_DESTINATIONS = 10;
+
 const NUM_TRIPS = 7;
 
 export async function generateDummyUsers() {
@@ -18,12 +22,13 @@ export async function generateDummyUsers() {
       users.push({
         username: faker.internet.userName(),
         password: faker.internet.password(),
-        email: faker.internet.email(),
+        email: faker.internet.email()
       });
     }
+
     await User.insertMany(users);
   } catch (error) {
-    console.error("Error in user dummy data process:", error);
+    console.error('Error in user dummy data process:', error);
   }
 }
 
@@ -38,22 +43,25 @@ export async function generateDummyDestinations() {
         start_date: faker.date.past(),
         end_date: faker.date.future(),
         image_url: faker.image.url(),
-        country: faker.location.country(),
+        country: faker.location.country()
       });
     }
+
     await Destination.insertMany(destinations);
   } catch (error) {
-    console.error("Error in destination dummy data process:", error);
+    console.error('Error in destination dummy data process:', error);
   }
 }
 
 export async function generateDummyTrips() {
   try {
     const users = await User.find();
+
     const destinations = await Destination.find();
 
     if (!users.length || !destinations.length) {
-      console.error("No users or destinations found");
+      console.error('No users or destinations found');
+
       return;
     }
 
@@ -63,7 +71,9 @@ export async function generateDummyTrips() {
       const randomUser = users[Math.floor(Math.random() * users.length)];
 
       const tripDestinations = [];
+
       const numberOfDestinations = Math.floor(Math.random() * 3) + 1;
+
       for (
         let startNumber = 0;
         startNumber < numberOfDestinations;
@@ -71,6 +81,7 @@ export async function generateDummyTrips() {
       ) {
         const randomDestination =
           destinations[Math.floor(Math.random() * destinations.length)];
+
         tripDestinations.push(randomDestination._id);
       }
 
@@ -80,11 +91,12 @@ export async function generateDummyTrips() {
         description: faker.lorem.sentences(2),
         destinations: tripDestinations,
         start_date: faker.date.past(),
-        end_date: faker.date.future(),
+        end_date: faker.date.future()
       });
     }
+
     await Trip.insertMany(trips);
   } catch (error) {
-    console.error("Error in dummy data process:", error);
+    console.error('Error in dummy data process:', error);
   }
 }

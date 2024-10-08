@@ -33,7 +33,7 @@ import { connectToDatabase } from './db/db.js';
 
 import { validateObjectId } from './middleware/validateObjectId.js';
 
-import { verifyAdmin, verifyToken, login, signup } from './controllers/auth.js';
+import { verifyAdmin, verifyToken } from './controllers/auth.js';
 
 const app = express();
 
@@ -116,10 +116,7 @@ function setupRoutes() {
     getUserByEmail(req, res)
   );
 
-  app.post('/api/v1/auth/signup', (req, res) => signup(req, res));
-
-  app.post('/api/v1/auth/login', (req, res) => login(req, res));
-
+  // AUTHENTICATION ROUTES
   app.put('/api/v1/users/:email', verifyToken, verifyAdmin, (req, res) =>
     updateUser(req, res)
   );

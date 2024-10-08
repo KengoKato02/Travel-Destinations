@@ -22,6 +22,8 @@ const config = [
       'import-x/extensions': 'off',
       'import-x/order': 'off',
       'max-statements': 'off',
+      'n/no-unsupported-features/node-builtins': 'off',
+      'sonarjs/pseudo-random': 'off',
     }
   }
 ];

@@ -22,16 +22,26 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: filePath,
         filename: path.relative('./src/pages', filePath),
+        chunks: ['main'],
         inject: true
       })
   );
+
+  // Add this line after the htmlPlugins definition
+  const indexHtmlPlugin = new HtmlWebpackPlugin({
+    template: './src/index.html',
+    filename: 'index.html',
+    chunks: ['main'],
+    inject: true
+  });
 
   return {
     entry: './src/app.js',
     output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
-      clean: true
+      clean: true,
+      publicPath: '/'
     },
     module: {
       rules: [
@@ -55,6 +65,7 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: '[name].css'
       }),
+      indexHtmlPlugin,
       ...htmlPlugins,
       new CopyWebpackPlugin({
         patterns: [{ from: 'public/icons', to: 'icons' }]

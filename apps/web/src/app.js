@@ -1,23 +1,25 @@
-import { loadDestinations } from './components/authenticated/destinations/loadDestinations.js';
-
-import { addDestinationForm } from './components/authenticated/destinations/addDestinations.js';
+import { createRouter } from './router.js';
 
 import { createNavbar } from './components/authenticated/navigation/navbar.js';
 
 import './styles/tailwind.css';
 
-const init = () => {
-  const navbar = createNavbar();
+document.addEventListener('DOMContentLoaded', async () => {
+  const { body } = document;
 
-  document.body.prepend(navbar);
+  const mainContent = document.createElement('div');
 
-  loadDestinations();
+  mainContent.id = 'main-content';
 
-  const form = document.getElementById('destinationForm');
+  body.appendChild(mainContent);
 
-  if (form) {
-    addDestinationForm();
+  const router = createRouter();
+
+  router.init();
+
+  if (window.location.pathname.startsWith('/authenticated')) {
+    const navbar = createNavbar();
+
+    body.prepend(navbar);
   }
-};
-
-document.addEventListener('DOMContentLoaded', init);
+});

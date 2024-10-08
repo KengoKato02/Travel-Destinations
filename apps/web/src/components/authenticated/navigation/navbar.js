@@ -36,9 +36,9 @@ export const createNavbar = () => {
 
   // Link items
   const links = [
-    { href: 'trips.html', text: 'Your Trips' },
-    { href: 'destinations.html', text: 'Destinations' },
-    { href: 'new-destination.html', text: 'Add Destination' }
+    { href: 'trips', text: 'Your Trips' },
+    { href: 'destinations', text: 'Destinations' },
+    { href: 'new-destination', text: 'Add Destination' }
   ];
 
   const linksContainer = document.createElement('div');
