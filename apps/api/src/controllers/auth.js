@@ -78,11 +78,24 @@ export async function login(req, res) {
     }
 
     // Generate a JWT for the authenticated user
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { user: user._id, email: user.email, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" } // Token expiration set to 1 hour
+      { expiresIn: "1h" }
     );
+
+    const refreshToken = jwt.sign(
+      { user: user._id, email: user.email, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       user: {
@@ -91,12 +104,46 @@ export async function login(req, res) {
         email: user.email,
         isAdmin: user.isAdmin,
       },
-      token,
+      accessToken,
     });
   } catch (error) {
     handleErrorResponse(res, 500, "Login failed", error);
   }
 }
+
+export const refreshAccessToken = async (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return handleErrorResponse(res, 403, "No refresh token provided");
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+
+    const user = await User.findById(decoded.user);
+
+    const newAccessToken = jwt.sign(
+      { user: user._id, email: user.email, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ newAccessToken });
+  } catch (error) {
+    handleErrorResponse(res, 403, "Invalid refresh token", error);
+  }
+};
+
+export const logout = async (req, res) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  res.status(200).json({ message: "Logged out" });
+};
 
 // Middleware to verify JWT token
 export const verifyToken = async (req, res, next) => {
@@ -108,12 +155,20 @@ export const verifyToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = decoded;
+
+    const refreshTokenExists = await checkRefreshToken(req.user.id);
+    if (!refreshTokenExists) {
+      return handleErrorResponse(
+        res,
+        403,
+        "Invalid refreshToken. Please login."
+      );
+    }
 
     next();
   } catch (err) {
-    return handleErrorResponse(res, 403, "Invalid token.", err);
+    return handleErrorResponse(res, 403, "Invalid accessToken.", err);
   }
 };
 

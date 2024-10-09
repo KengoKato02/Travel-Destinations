@@ -33,7 +33,14 @@ import { connectToDatabase } from "./db/db.js";
 
 import { validateObjectId } from "./middleware/validateObjectId.js";
 
-import { verifyAdmin, verifyToken, login, signup } from "./controllers/auth.js";
+import {
+  verifyAdmin,
+  verifyToken,
+  login,
+  signup,
+  logout,
+  refreshAccessToken,
+} from "./controllers/auth.js";
 
 const app = express();
 
@@ -127,6 +134,8 @@ function setupRoutes() {
 
   app.post("/api/v1/auth/login", login);
   app.post("/api/v1/auth/signup", signup);
+  app.post("/api/v1/auth/logout", logout);
+  app.post("/api/v1/auth/refresh-token", refreshAccessToken);
 
   // TRIP ROUTES
   app.get("/api/v1/trips", (req, res) => getAllTrips(req, res));
