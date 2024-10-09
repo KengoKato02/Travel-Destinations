@@ -26,7 +26,7 @@ export const getTripById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const trip = await Trip.findById(id).lean();
+    const trip = await Trip.findById(id).populate('destinations').lean();
 
     if (!trip) {
       return res.status(404).json({ error: 'Trip not found' });

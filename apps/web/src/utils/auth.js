@@ -1,15 +1,16 @@
-import { stringify } from 'safe-stable-stringify';
+import { stringify } from "safe-stable-stringify";
 
-const SESSION_KEY = 'userSession';
+const SESSION_KEY = "userSession";
 
 const SESSION_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
-export function setUserSession(email, username, token) {
+export function setUserSession(email, username, token, isAdmin) {
   const session = {
     email,
     username,
     token,
-    expiresAt: Date.now() + SESSION_DURATION
+    isAdmin,
+    expiresAt: Date.now() + SESSION_DURATION,
   };
 
   localStorage.setItem(SESSION_KEY, stringify(session));
@@ -18,7 +19,9 @@ export function setUserSession(email, username, token) {
 export function getUserSession() {
   const sessionStr = localStorage.getItem(SESSION_KEY);
 
-  if (!sessionStr) {return null;}
+  if (!sessionStr) {
+    return null;
+  }
 
   const session = JSON.parse(sessionStr);
 

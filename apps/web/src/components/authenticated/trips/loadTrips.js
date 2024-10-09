@@ -1,7 +1,12 @@
 import { fetchTrips } from '../../../utils/api.js';
+import { getUserSession } from '../../../utils/auth.js';
 
 export const loadTrips = async () => {
   const tripsList = document.getElementById('tripsList');
+
+  const user = getUserSession();
+  console.log('User:', user);
+  
 
   if (!tripsList) {
     return;
@@ -9,6 +14,7 @@ export const loadTrips = async () => {
 
   try {
     const trips = await fetchTrips();
+    console.log(trips);
 
     tripsList.innerHTML = '';
 
@@ -17,7 +23,7 @@ export const loadTrips = async () => {
         const listItem = document.createElement('li');
 
         listItem.className =
-          'bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105';
+          'bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer';
 
         const title = document.createElement('h2');
 
@@ -31,7 +37,7 @@ export const loadTrips = async () => {
 
         destination.className = 'text-gray-500 font-medium';
 
-        destination.textContent = trip.destination;
+        destination.textContent = `Destinations: ${trip.destinations.length}`;
 
         listItem.appendChild(destination);
 
@@ -42,6 +48,11 @@ export const loadTrips = async () => {
         description.textContent = trip.description;
 
         listItem.appendChild(description);
+
+        listItem.addEventListener('click', () => {
+          // Update the route to match your application's structure
+          window.location.href = `/authenticated/trips/${trip._id}`;
+        });
 
         tripsList.appendChild(listItem);
       }

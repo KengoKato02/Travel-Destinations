@@ -1,18 +1,20 @@
+import { isAuthenticated } from "./utils/auth.js";
+
 export function createRouter() {
   const routes = {
-    '/': {
-      template: '/unauthenticated/landing-page.html',
-      init: null // No specific initialization needed for landing page
+    "/": {
+      template: "/unauthenticated/landing-page.html",
+      init: null, // No specific initialization needed for landing page
     },
-    '/authenticated/destinations': {
-      template: '/authenticated/destinations.html',
+    "/authenticated/destinations": {
+      template: "/authenticated/destinations.html",
       init: async () => {
         const m = await import(
-          './components/authenticated/destinations/loadDestinations.js'
+          "./components/authenticated/destinations/loadDestinations.js"
         );
 
         return m.loadDestinations();
-      }
+      },
     },
     '/authenticated/trips': {
       template: '/authenticated/trips.html',
@@ -22,32 +24,43 @@ export function createRouter() {
         return m.loadTrips();
       }
     },
-    '/authenticated/new-destination': {
-      template: '/authenticated/new-destination.html',
+    "/authenticated/new-destination": {
+      template: "/authenticated/new-destination.html",
       init: async () => {
         const m = await import(
-          './components/authenticated/destinations/addDestinations.js'
+          "./components/authenticated/destinations/addDestinations.js"
         );
 
         return m.addDestinationForm();
-      }
+      },
     },
-    '/login': {
-      template: '/unauthenticated/auth/login.html',
+    "/login": {
+      template: "/unauthenticated/auth/login.html",
       init: async () => {
-        const m = await import('./components/unauthenticated/auth/login.js');
+        const m = await import("./components/unauthenticated/auth/login.js");
 
         return m.initLogin();
-      }
+      },
     },
-    '/signup': {
-      template: '/unauthenticated/auth/signup.html',
+    "/signup": {
+      template: "/unauthenticated/auth/signup.html",
       init: async () => {
-        const m = await import('./components/unauthenticated/auth/signup.js');
+        const m = await import("./components/unauthenticated/auth/signup.js");
 
         return m.initSignup();
+      },
+    },
+    '/authenticated/trips/:id': {
+      template: '/authenticated/trip-details.html',
+      init: async () => {
+        const tripId = window.location.pathname.split('/').pop();
+        if (tripId) {
+          const m = await import('./components/authenticated/trips/tripDetails.js');
+          return m.loadTripDetails(tripId);
+        }
+        console.error('No trip ID provided');
       }
-    }
+    },
   };
 
   async function loadContent(url) {
@@ -59,11 +72,20 @@ export function createRouter() {
   async function handleRoute() {
     const path = window.location.pathname;
 
-    const route = routes[path] || routes['/'];
+    if (path.startsWith("/authenticated")) {
+      if (!isAuthenticated()) {
+        alert("You must be logged in to access this page.");
+        window.history.pushState({}, "", "/login");
+        handleRoute();
+        return;
+      }
+    }
+
+    const route = routes[path] || routes["/"];
 
     const content = await loadContent(route.template);
 
-    const mainContent = document.getElementById('main-content');
+    const mainContent = document.getElementById("main-content");
 
     if (mainContent) {
       mainContent.innerHTML = content;
@@ -72,18 +94,18 @@ export function createRouter() {
         await route.init();
       }
     } else {
-      console.error('Main content element not found');
+      console.error("Main content element not found");
     }
   }
 
   function init() {
-    window.addEventListener('popstate', handleRoute);
+    window.addEventListener("popstate", handleRoute);
 
-    document.body.addEventListener('click', (event) => {
+    document.body.addEventListener("click", (event) => {
       if (event.target.matches('a[href^="/"]')) {
         event.preventDefault();
 
-        window.history.pushState({}, '', event.target.href);
+        window.history.pushState({}, "", event.target.href);
 
         handleRoute();
       }

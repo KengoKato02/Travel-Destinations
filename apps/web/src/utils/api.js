@@ -92,3 +92,22 @@ export async function postDestination(destinationData) {
     throw new Error(error.message);
   }
 }
+
+export async function fetchTripById(id) {
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/trips/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch trip details');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
