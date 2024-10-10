@@ -20,40 +20,56 @@ export const loadTripDetails = async (tripId) => {
     const tripHTML = `
       <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="p-6">
-          <h2 class="text-3xl font-bold mb-4 text-indigo-600">${trip.title}</h2>
-          <p class="text-gray-600 mb-4">${trip.description}</p>
-          <p class="text-sm text-gray-500 mb-6">
-            <span class="font-semibold">Date:</span> ${new Date(trip.start_date).toLocaleDateString()} - ${new Date(trip.end_date).toLocaleDateString()}
+          <h2 id="tripTitle" class="text-3xl font-bold mb-4 text-indigo-600"></h2>
+          <p id="tripDescription" class="text-gray-600 mb-4"></p>
+          <p id="tripDates" class="text-sm text-gray-500 mb-6">
+            <span class="font-semibold">Date:</span>
           </p>
           <h3 class="text-2xl font-semibold mb-4 text-indigo-500">Destinations:</h3>
-          <div class="mb-4">
-            <select id="destinationSelect" class="w-full p-2 border border-gray-300 rounded">
-              <option value="">Select a destination to add</option>
-              ${allDestinations
-                .filter(dest => !trip.destinations.some(tripDest => tripDest._id === dest._id))
-                .map(dest => `<option value="${dest._id}">${dest.title}</option>`)
-                .join('')}
-            </select>
-            <button id="addDestinationBtn" class="mt-2 bg-green-500 text-white px-4 py-2 rounded">Add Destination</button>
+          <div id="destinationSelectContainer" class="mb-4 flex items-center space-x-2">
+            <select id="destinationSelect" class="w-2/3 p-2 border border-gray-300 rounded"></select>
+            <button id="addDestinationBtn" class="w-1/3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Destination</button>
           </div>
-          <div class="space-y-6">
-            ${trip.destinations.map(dest => `
-              <div class="flex flex-col md:flex-row bg-gray-100 rounded-lg overflow-hidden shadow-md">
-                <img src="${getImageUrl(dest.image_url)}" alt="${dest.title}" class="w-full md:w-1/3 h-48 object-cover" onerror="this.src='path/to/default/image.jpg';">
-                <div class="p-4 md:w-2/3">
-                  <h4 class="font-semibold text-lg mb-2">${dest.title}</h4>
-                  <p class="text-sm text-gray-600 mb-2">${dest.description}</p>
-                  <p class="text-xs text-gray-500">${dest.country}</p>
-                  <button class="removeDestinationBtn bg-red-500 text-white px-2 py-1 rounded mt-2" data-destination-id="${dest._id}">Remove</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
+          <div id="tripDestinations" class="space-y-6"></div>
         </div>
       </div>
     `;
 
     tripDetailsContainer.innerHTML = tripHTML;
+
+    document.getElementById('tripTitle').textContent = trip.title;
+    document.getElementById('tripDescription').textContent = trip.description;
+    document.getElementById('tripDates').textContent = `${new Date(trip.start_date).toLocaleDateString()} - ${new Date(trip.end_date).toLocaleDateString()}`;
+
+    const destinationSelect = document.getElementById('destinationSelect');
+    destinationSelect.innerHTML = '<option value="">Select a destination to add</option>' +
+      allDestinations
+        .filter(dest => !trip.destinations.some(tripDest => tripDest._id === dest._id))
+        .map(dest => `<option value="${dest._id}">${dest.title}</option>`)
+        .join('');
+
+    const tripDestinationsContainer = document.getElementById('tripDestinations');
+    const destinationItemTemplate = document.getElementById('destinationItemTemplate');
+    tripDestinationsContainer.innerHTML = '';
+
+    trip.destinations.forEach(dest => {
+      const destinationItem = destinationItemTemplate.content.cloneNode(true);
+      const container = destinationItem.querySelector('.destination-item');
+      container.dataset.destinationId = dest._id;
+      
+      const img = destinationItem.querySelector('img');
+      img.src = getImageUrl(dest.image_url);
+      img.alt = dest.title;
+      
+      destinationItem.querySelector('h4').textContent = dest.title;
+      destinationItem.querySelector('p:nth-of-type(1)').textContent = dest.description;
+      destinationItem.querySelector('p:nth-of-type(2)').textContent = dest.country;
+      
+      const removeBtn = destinationItem.querySelector('.removeDestinationBtn');
+      removeBtn.dataset.destinationId = dest._id;
+      
+      tripDestinationsContainer.appendChild(destinationItem);
+    });
 
     const addDestinationBtn = document.getElementById('addDestinationBtn');
     addDestinationBtn.addEventListener('click', async () => {
@@ -96,14 +112,4 @@ function getImageUrl(imageUrl) {
   } else {
     return 'path/to/default/image.jpg';
   }
-}
-
-function arrayBufferToBase64(buffer) {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
 }

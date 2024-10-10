@@ -92,19 +92,14 @@ function setupRoutes() {
 
   // DESTINATION ROUTES
   app.get('/api/v1', (req, res) => getHomeRoute(req, res));
-
   app.get('/api/v1/destinations', (req, res) => getAllDestinations(req, res));
-
   app.get('/api/v1/destinations/:id', (req, res) =>
     getDestinationById(req, res)
   );
-
   app.post('/api/v1/destinations', (req, res) => createDestination(req, res));
-
   app.put('/api/v1/destinations/:id', (req, res) =>
     updateDestination(req, res)
   );
-
   app.delete('/api/v1/destinations/:id', (req, res) =>
     deleteDestination(req, res)
   );
@@ -124,15 +119,11 @@ function setupRoutes() {
   app.get('/api/v1/trips/:id', validateObjectId('id'), getTripById);
   app.post('/api/v1/trips', (req, res) => createTrip(req, res));
   app.put('/api/v1/trips/:id', validateObjectId('id'), updateTrip);
-
   app.delete('/api/v1/trips/:id', validateObjectId('id'), deleteTrip);
-
   app.get('/api/v1/trips/user/:id', validateObjectId('id'), getTripsByUser);
-
   app.post('/api/v1/trips/:id/destinations', (req, res) =>
     addDestinationToTrip(req, res)
   );
-
   app.delete('/api/v1/trips/:id/destinations/:destinationId', (req, res) =>
     removeDestinationFromTrip(req, res)
   );

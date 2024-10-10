@@ -8,10 +8,10 @@ export const addDestinationForm = () => {
   fileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
-      const maxSize = 5 * 1024 * 1024; // 5 MB
+      const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
         alert('File size exceeds 5 MB. Please select a smaller file.');
-        event.target.value = ''; // Clear the file input
+        event.target.value = ''; 
       }
     }
   });
@@ -26,7 +26,7 @@ export const addDestinationForm = () => {
 
       if (!allowedTypes.includes(file.type)) {
         alert('File must be a PNG.');
-        return; // Exit the function to prevent form submission
+        return; 
       }
     }
 
@@ -38,7 +38,7 @@ export const addDestinationForm = () => {
       if (response) {
         alert('Destination added successfully!');
         form.reset();
-        window.location.href = '/destinations';
+        window.location.href = '/authenticated/destinations';
       } else {
         throw new Error('Failed to add destination');
       }

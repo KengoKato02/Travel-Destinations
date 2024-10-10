@@ -20,9 +20,9 @@ const createNavLinks = () => {
   navLinksContainer.appendChild(logoContainer);
 
   const links = [
-    { href: "/authenticated/trips", text: "Your Trips" },
-    { href: "/authenticated/new-trip", text: "Add Trip" },
+    { href: "/authenticated/trips", text: "Trips" },
     { href: "/authenticated/destinations", text: "Destinations" },
+    { href: "/authenticated/new-trip", text: "Add Trip" },
   ];
 
   if (isAdmin) {

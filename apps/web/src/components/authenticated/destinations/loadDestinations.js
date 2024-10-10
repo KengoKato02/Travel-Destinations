@@ -5,129 +5,109 @@ import { getUserSession } from '../../../utils/auth.js';
 import { openEditModal } from '../modals/editDestinationModal.js';
 
 const createDestinationListItem = (destination, user) => {
-  const listItem = document.createElement('li');
-
-  listItem.className =
-    'bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 relative';
-
-  const title = document.createElement('h2');
-
-  title.className = 'text-2xl font-bold text-blue-600 hover:underline';
-
-  title.textContent = destination.title;
-
-  listItem.appendChild(title);
-
-  const country = document.createElement('p');
-
-  country.className = 'text-gray-500 font-medium';
-
-  country.textContent = destination.country;
-
-  listItem.appendChild(country);
-
-  const description = document.createElement('p');
-
-  description.className = 'mt-2 text-gray-700';
-
-  description.textContent = destination.description;
-
-  listItem.appendChild(description);
-
-  const image = document.createElement('img');
-
-  image.src = destination.image_url;
-
-  image.alt = destination.title;
-
-  image.className = 'mt-4 w-full h-96 object-cover rounded-lg shadow-md';
-
-  image.onerror = function () {
-    this.src = 'path/to/default/image.jpg';
-  };
-
-  listItem.appendChild(image);
-
-  if (user?.isAdmin) {
-    addAdminControls(listItem, destination);
+  const template = document.getElementById('destinationTemplate');
+  if (!template) {
+    console.error('Destination template not found');
+    return null;
   }
 
-  return listItem;
-};
+  const listItem = template.content.cloneNode(true).querySelector('li');
+  if (!listItem) {
+    console.error('List item not found in template');
+    return null;
+  }
 
-const addAdminControls = (listItem, destination) => {
-  const editButton = document.createElement('button');
+  const title = listItem.querySelector('h2');
+  if (title) title.textContent = destination.title;
 
-  editButton.className =
-    'absolute top-4 right-12 p-2 text-gray-500 hover:text-gray-700 transition-colors duration-300';
+  const country = listItem.querySelector('p:nth-of-type(1)');
+  if (country) country.textContent = destination.country;
 
-  editButton.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+  const description = listItem.querySelector('p:nth-of-type(2)');
+  if (description) description.textContent = destination.description;
 
-  editButton.setAttribute('aria-label', 'Edit destination');
+  const image = listItem.querySelector('img');
+  if (image) {
+    image.src = destination.image_url;
+    image.alt = destination.title;
+    image.onerror = function () {
+      this.src = '/path/to/default/image.jpg';
+    };
+  }
 
-  editButton.addEventListener('click', (event) => {
-    event.stopPropagation();
+  if (user?.isAdmin) {
+    const adminControls = listItem.querySelector('.admin-controls');
+    if (adminControls) {
+      adminControls.style.display = 'flex';
 
-    openEditModal(destination);
-  });
+      const editButton = adminControls.querySelector('.edit-button');
+      if (editButton) {
+        editButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+          openEditModal(destination);
+        });
+      }
 
-  listItem.appendChild(editButton);
-
-  const deleteButton = document.createElement('button');
-
-  deleteButton.className =
-    'absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 transition-colors duration-300';
-
-  deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
-
-  deleteButton.setAttribute('aria-label', 'Delete destination');
-
-  deleteButton.addEventListener('click', async (event) => {
-    event.stopPropagation();
-
-    if (confirm('Are you sure you want to delete this destination?')) {
-      try {
-        await deleteDestination(destination._id);
-
-        listItem.remove();
-      } catch (error) {
-        console.error('Error deleting destination:', error);
-
-        alert('Failed to delete destination. Please try again.');
+      const deleteButton = adminControls.querySelector('.delete-button');
+      if (deleteButton) {
+        deleteButton.addEventListener('click', async (event) => {
+          event.stopPropagation();
+          if (confirm('Are you sure you want to delete this destination?')) {
+            try {
+              await deleteDestination(destination._id);
+              listItem.remove();
+            } catch (error) {
+              console.error('Error deleting destination:', error);
+              alert('Failed to delete destination. Please try again.');
+            }
+          }
+        });
       }
     }
-  });
-
-  listItem.appendChild(deleteButton);
+  } else {
+    const adminControls = listItem.querySelector('.admin-controls');
+    if (adminControls) adminControls.remove();
+  }
+  return listItem;
 };
 
 export const loadDestinations = async () => {
   const destinationsList = document.getElementById('destinationsList');
-
   const user = getUserSession();
 
   if (!destinationsList) {
+    console.error('Destinations list container not found');
     return;
   }
 
   try {
     const destinations = await fetchDestinations();
-
     destinationsList.innerHTML = '';
 
     if (Array.isArray(destinations) && destinations.length > 0) {
-      for (const destination of destinations) {
+      destinations.forEach((destination) => {
         const listItem = createDestinationListItem(destination, user);
-
-        destinationsList.appendChild(listItem);
-      }
+        if (listItem) {
+          destinationsList.appendChild(listItem);
+        } else {
+          console.error('Failed to create list item for destination:', destination);
+        }
+      });
     } else {
-      destinationsList.innerHTML = '<li>No destinations found.</li>';
+      const noDestinationsMessage = document.createElement('li');
+      noDestinationsMessage.textContent = 'No destinations found.';
+      noDestinationsMessage.className = 'col-span-full text-center text-gray-500';
+      destinationsList.appendChild(noDestinationsMessage);
     }
   } catch (error) {
     console.error('Error fetching destinations:', error);
-
-    destinationsList.innerHTML =
-      '<li>Error loading destinations. Please try again later.</li>';
+    const errorMessage = document.createElement('li');
+    errorMessage.textContent = 'Error loading destinations. Please try again later.';
+    errorMessage.className = 'col-span-full text-center text-red-500';
+    destinationsList.appendChild(errorMessage);
   }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadDestinations();
+});
