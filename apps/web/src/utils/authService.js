@@ -1,19 +1,20 @@
-import { stringify } from "safe-stable-stringify";
+import { stringify } from 'safe-stable-stringify';
 
-const API_BASE_URL = "http://localhost:3000/api/v1/auth";
+const { API_BASE_URL } = process.env;
 
 export const signupUser = async (formObject) => {
   const response = await fetch(`${API_BASE_URL}/signup`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json'
     },
-    body: stringify(formObject),
+    body: stringify(formObject)
   });
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Signup failed");
+
+    throw new Error(errorData.message || 'Signup failed');
   }
 
   return response.json();
@@ -21,16 +22,17 @@ export const signupUser = async (formObject) => {
 
 export const loginUser = async (formObject) => {
   const response = await fetch(`${API_BASE_URL}/login`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json'
     },
-    body: stringify(formObject),
+    body: stringify(formObject)
   });
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Login failed");
+
+    throw new Error(errorData.message || 'Login failed');
   }
 
   return response.json();
