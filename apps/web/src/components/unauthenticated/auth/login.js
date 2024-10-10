@@ -1,19 +1,28 @@
-import { setUserSession, getUserSession } from "../../../utils/auth.js";
-import { loginUser } from "../../../utils/authService.js";
+import { setUserSession } from '../../../utils/auth.js';
+
+import { loginUser } from '../../../utils/authService.js';
 
 export const initLogin = () => {
-  const loginForm = document.getElementById("loginForm");
+  const loginForm = document.getElementById('loginForm');
+
+  const errorPopup = document.createElement('div');
+
+  errorPopup.className =
+    'hidden fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center';
+
+  document.body.appendChild(errorPopup);
 
   if (!loginForm) {
-    console.error("Login form not found");
+    console.error('Login form not found');
 
     return;
   }
 
-  loginForm.addEventListener("submit", async (event) => {
+  loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const formData = new FormData(loginForm);
+
     const formObject = Object.fromEntries(formData);
 
     try {
@@ -26,11 +35,17 @@ export const initLogin = () => {
         data.user.isAdmin
       );
 
-      window.location.href = "/authenticated/trips";
+      window.location.href = '/authenticated/trips';
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error('Error during login:', error);
 
-      alert("Login failed. Please check your credentials and try again.");
+      errorPopup.textContent = 'Incorrect email or password. Please try again.';
+
+      errorPopup.classList.remove('hidden');
+
+      setTimeout(() => {
+        errorPopup.classList.add('hidden');
+      }, 3000);
     }
   });
 };

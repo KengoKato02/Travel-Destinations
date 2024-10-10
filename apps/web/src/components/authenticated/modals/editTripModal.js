@@ -2,7 +2,10 @@ import { updateTrip } from '../../../utils/api.js';
 
 export function openEditTripModal(trip) {
   const modal = document.createElement('div');
-  modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
+
+  modal.className =
+    'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
+
   modal.innerHTML = `
     <div class="bg-white p-8 rounded-lg shadow-xl max-w-2xl w-full">
       <h2 class="text-3xl font-bold mb-6">Edit Trip</h2>
@@ -34,20 +37,27 @@ export function openEditTripModal(trip) {
   document.body.appendChild(modal);
 
   const form = document.getElementById('editTripForm');
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
     const formData = new FormData(form);
+
     try {
       await updateTrip(trip._id, formData);
+
       modal.remove();
-      // Reload trips or update the UI as needed
+
+      window.location.reload();
     } catch (error) {
       console.error('Error updating trip:', error);
+
       alert('Failed to update trip. Please try again.');
     }
   });
 
   const cancelButton = document.getElementById('cancelEdit');
+
   cancelButton.addEventListener('click', () => {
     modal.remove();
   });

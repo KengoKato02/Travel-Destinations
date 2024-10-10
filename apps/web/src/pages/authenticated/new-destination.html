@@ -17,16 +17,9 @@
                 <textarea class="w-full p-2 border border-gray-300 rounded" name="description"></textarea>
             </div>
             <div>
-                <label class="block font-medium mb-1" for="first_day">Day of Departure</label>
-                <input class="w-full p-2 border border-gray-300 rounded" type="date" name="start_date" required />
-            </div>
-            <div>
-                <label class="block font-medium mb-1" for="last_day">Last Day</label>
-                <input class="w-full p-2 border border-gray-300 rounded" type="date" name="end_date" required />
-            </div>
-            <div>
                 <label class="block font-medium mb-1" for="picture">Image</label>
-                <input class="w-full p-2 border border-gray-300 rounded" type="file" name="image_url" />
+                <input class="w-full p-2 border border-gray-300 rounded" type="file" name="image_url" accept="image/png" />
+                <p class="text-sm text-gray-600 mt-1">* Only PNG files up to 5 MB are allowed.</p> 
             </div>
             <div>
                 <label class="block font-medium mb-1" for="country">Country</label>

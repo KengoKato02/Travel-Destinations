@@ -12,14 +12,6 @@ const destinationSchema = new mongoose.Schema(
       minLength: 3,
       required: true
     },
-    start_date: {
-      type: Date,
-      required: true
-    },
-    end_date: {
-      type: Date,
-      required: true
-    },
     image_url: {
       data: Buffer,
       contentType: String

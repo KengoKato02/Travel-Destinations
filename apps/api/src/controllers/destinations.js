@@ -7,7 +7,14 @@ import Destination from '../schemas/Destination.js';
 import { handleErrorResponse } from '../utils/errorHandler.js';
 
 const upload = multer({
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'image/png') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PNG files are allowed'), false);
+    }
+  }
 });
 
 export async function getHomeRoute(req, res) {
@@ -84,8 +91,6 @@ export async function createDestination(req, res) {
       const destination = new Destination({
         title: req.body.title,
         description: req.body.description,
-        start_date: req.body.start_date,
-        end_date: req.body.end_date,
         country: req.body.country,
         image_url: req.file
           ? {
