@@ -1,6 +1,6 @@
 import { stringify } from 'safe-stable-stringify';
 
-const { API_BASE_URL } = process.env;
+const { API_BASE_URL } = process.env.API_BASE_URL;
 
 export const signupUser = async (formObject) => {
   const response = await fetch(`${API_BASE_URL}/signup`, {
