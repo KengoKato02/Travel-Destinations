@@ -2,13 +2,11 @@ import { stringify } from 'safe-stable-stringify';
 
 import { getAuthToken, getUserSession } from './auth.js';
 
-const { API_BASE_URL } = process.env;
-
 const token = getAuthToken();
 
 export async function fetchMessage() {
   try {
-    const response = await fetch(`${API_BASE_URL}`);
+    const response = await fetch(`${process.env.API_BASE_URL}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch message');
@@ -68,13 +66,16 @@ export async function fetchTrips() {
 
 export async function fetchDestinationsById(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/destinations/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch destinations');
@@ -90,7 +91,7 @@ export async function postDestination(formData) {
   console.log('called with token', token);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/destinations`, {
+    const response = await fetch(`${process.env.API_BASE_URL}/destinations`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`
@@ -110,13 +111,16 @@ export async function postDestination(formData) {
 
 export async function deleteDestination(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/destinations/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to delete destination');
@@ -132,13 +136,16 @@ export async function deleteDestination(id) {
 
 export async function updateDestination(id, formData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
-      method: 'PUT',
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${token}`
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/destinations/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to update destination');
@@ -155,7 +162,7 @@ export async function updateDestination(id, formData) {
 export async function deleteTrip(tripId) {
   try {
     const response = await fetch(
-      `${process.env.API_BASE_URL}/trips/${tripId}`,
+      `${process.env.process.env.API_BASE_URL}/trips/${tripId}`,
       {
         method: 'DELETE',
         headers: {
