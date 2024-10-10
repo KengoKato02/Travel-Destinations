@@ -40,8 +40,6 @@ export async function generateDummyDestinations() {
       destinations.push({
         title: faker.location.city(),
         description: faker.lorem.paragraph(),
-        start_date: faker.date.past(),
-        end_date: faker.date.future(),
         image_url: faker.image.url(),
         country: faker.location.country()
       });
