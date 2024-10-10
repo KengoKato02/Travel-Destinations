@@ -39,7 +39,7 @@ export const loadTripDetails = async (tripId) => {
           <div class="space-y-6">
             ${trip.destinations.map(dest => `
               <div class="flex flex-col md:flex-row bg-gray-100 rounded-lg overflow-hidden shadow-md">
-                <img src="${dest.image_url}" alt="${dest.title}" class="w-full md:w-1/3 h-48 object-cover">
+                <img src="${getImageUrl(dest.image_url)}" alt="${dest.title}" class="w-full md:w-1/3 h-48 object-cover" onerror="this.src='path/to/default/image.jpg';">
                 <div class="p-4 md:w-2/3">
                   <h4 class="font-semibold text-lg mb-2">${dest.title}</h4>
                   <p class="text-sm text-gray-600 mb-2">${dest.description}</p>
@@ -55,7 +55,6 @@ export const loadTripDetails = async (tripId) => {
 
     tripDetailsContainer.innerHTML = tripHTML;
 
-    // Add destination button
     const addDestinationBtn = document.getElementById('addDestinationBtn');
     addDestinationBtn.addEventListener('click', async () => {
       const select = document.getElementById('destinationSelect');
@@ -63,7 +62,7 @@ export const loadTripDetails = async (tripId) => {
       if (selectedDestinationId) {
         try {
           await addDestinationToTrip(trip._id, selectedDestinationId);
-          loadTripDetails(trip._id); // Reload the trip details
+          loadTripDetails(trip._id); 
         } catch (error) {
           alert('Failed to add destination. Please try again.');
         }
@@ -72,13 +71,12 @@ export const loadTripDetails = async (tripId) => {
       }
     });
 
-    // Remove destination buttons
     const removeDestinationBtns = document.querySelectorAll('.removeDestinationBtn');
     removeDestinationBtns.forEach(btn => {
       btn.addEventListener('click', async (e) => {
         try {
           await removeDestinationFromTrip(trip._id, e.target.dataset.destinationId);
-          loadTripDetails(trip._id); // Reload the trip details
+          loadTripDetails(trip._id); 
         } catch (error) {
           alert('Failed to remove destination. Please try again.');
         }
@@ -89,3 +87,23 @@ export const loadTripDetails = async (tripId) => {
     tripDetailsContainer.innerHTML = '<p class="text-red-500">Error loading trip details. Please try again later.</p>';
   }
 };
+
+function getImageUrl(imageUrl) {
+  if (typeof imageUrl === 'string') {
+    return imageUrl;
+  } else if (imageUrl && imageUrl.data && imageUrl.contentType) {
+    return `data:${imageUrl.contentType};base64,${imageUrl.data}`;
+  } else {
+    return 'path/to/default/image.jpg';
+  }
+}
+
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}

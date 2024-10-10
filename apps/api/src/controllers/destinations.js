@@ -1,8 +1,40 @@
-import mongoose from 'mongoose';
-
+import multer from 'multer';
 import Destination from '../schemas/Destination.js';
-
 import { handleErrorResponse } from '../utils/errorHandler.js';
+
+const upload = multer();
+
+export async function createDestination(req, res) {
+  try {
+    await upload.single('image_url')(req, res, async (err) => {
+      if (err) {
+        return handleErrorResponse(res, 400, 'Error uploading file', err);
+      }
+
+      const destination = new Destination({
+        title: req.body.title,
+        description: req.body.description,
+        start_date: req.body.start_date,
+        end_date: req.body.end_date,
+        country: req.body.country,
+        image_url: req.file ? {
+          data: req.file.buffer,
+          contentType: req.file.mimetype
+        } : undefined
+      });
+
+      const result = await destination.save();
+      console.log('result', result);
+
+      res.status(201).json(result);
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return handleErrorResponse(res, 400, 'Validation errors', error);
+    }
+    handleErrorResponse(res, 500, 'Error creating destination', error);
+  }
+}
 
 export async function getHomeRoute(req, res) {
   try {
@@ -26,7 +58,19 @@ export async function getAllDestinations(req, res) {
       return handleErrorResponse(res, 404, 'No destinations found');
     }
 
-    res.status(200).json(destinations);
+    const destinationsWithImageUrls = destinations.map(dest => {
+      const destObj = dest.toObject();
+      if (typeof destObj.image_url === 'string') {
+        return destObj;
+      } else if (destObj.image_url && destObj.image_url.data && destObj.image_url.contentType) {
+        destObj.image_url = `data:${destObj.image_url.contentType};base64,${destObj.image_url.data.toString('base64')}`;
+      } else {
+        destObj.image_url = null;
+      }
+      return destObj;
+    });
+
+    res.status(200).json(destinationsWithImageUrls);
   } catch (error) {
     handleErrorResponse(res, 500, 'Error fetching destinations', error);
   }
@@ -49,30 +93,6 @@ export async function getDestinationById(req, res) {
     res.status(200).json(destination);
   } catch (error) {
     handleErrorResponse(res, 500, 'Error fetching destination', error);
-  }
-}
-
-export async function createDestination(req, res) {
-  try {
-    const destination = new Destination({
-      title: req.body.title,
-      description: req.body.description,
-      start_date: req.body.start_date,
-      end_date: req.body.end_date,
-      image_url: req.body.image_url,
-      country: req.body.country
-    });
-
-    const result = await destination.save();
-
-    res.status(201).json(result);
-  } catch (error) {
-    // Handling Mongoose validation errors
-    if (error.name === 'ValidationError') {
-      return handleErrorResponse(res, 400, 'Validation errors', error);
-    }
-
-    handleErrorResponse(res, 500, 'Error creating destination', error);
   }
 }
 

@@ -44,12 +44,12 @@ export const loadDestinations = async () => {
         listItem.appendChild(description);
 
         const image = document.createElement('img');
-
         image.src = destination.image_url;
-
         image.alt = destination.title;
-
         image.className = 'mt-4 w-full h-96 object-cover rounded-lg shadow-md';
+        image.onerror = function() {
+          this.src = 'path/to/default/image.jpg';
+        };
 
         listItem.appendChild(image);
 

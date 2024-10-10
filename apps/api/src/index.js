@@ -35,7 +35,7 @@ import { connectToDatabase } from "./db/db.js";
 
 import { validateObjectId } from "./middleware/validateObjectId.js";
 
-import { verifyAdmin, verifyToken, login, signup } from "./controllers/auth.js";
+import { login, signup } from "./controllers/auth.js";
 
 const app = express();
 
@@ -62,7 +62,8 @@ function setupMiddleware() {
     })
   );
 
-  app.use(express.json());
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   app.disable("x-powered-by");
 }
@@ -90,43 +91,35 @@ function setupRoutes() {
 
   // DESTINATION ROUTES
   app.get("/api/v1", (req, res) => getHomeRoute(req, res));
-
   app.get("/api/v1/destinations", (req, res) =>
     getAllDestinations(req, res)
   );
-
   app.get("/api/v1/destinations/:id", (req, res) =>
     getDestinationById(req, res)
   );
-
   app.post("/api/v1/destinations", (req, res) =>
     createDestination(req, res)
   );
-
   app.put("/api/v1/destinations/:id", (req, res) =>
     updateDestination(req, res)
   );
-
   app.delete("/api/v1/destinations/:id", (req, res) =>
     deleteDestination(req, res)
   );
 
   // USER ROUTES
   app.get("/api/v1/users", (req, res) => getAllUsers(req, res));
-
   app.get("/api/v1/users/:email", (req, res) =>
     getUserByEmail(req, res)
   );
-
-  // AUTHENTICATION ROUTES
   app.put("/api/v1/users/:email", (req, res) =>
     updateUser(req, res)
   );
-
   app.delete("/api/v1/users/:email", (req, res) =>
     deleteUser(req, res)
   );
 
+  // AUTHENTICATION ROUTES
   app.post("/api/v1/auth/login", login);
   app.post("/api/v1/auth/signup", signup);
 

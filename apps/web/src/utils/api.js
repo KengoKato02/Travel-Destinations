@@ -73,14 +73,11 @@ export async function fetchDestinationsById(id) {
   }
 }
 
-export async function postDestination(destinationData) {
+export async function postDestination(formData) {
   try {
     const response = await fetch(`${API_BASE_URL}/destinations`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: stringify(destinationData)
+      body: formData
     });
 
     if (!response.ok) {

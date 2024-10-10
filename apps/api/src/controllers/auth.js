@@ -99,28 +99,28 @@ export async function login(req, res) {
 }
 
 // Middleware to verify JWT token
-export const verifyToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+// export const verifyToken = async (req, res, next) => {
+//   const token = req.headers.authorization?.split(" ")[1];
 
-  if (!token) {
-    return handleErrorResponse(res, 401, "Authentication required.");
-  }
+//   if (!token) {
+//     return handleErrorResponse(res, 401, "Authentication required.");
+//   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+//     req.user = decoded;
 
-    next();
-  } catch (err) {
-    return handleErrorResponse(res, 403, "Invalid token.", err);
-  }
-};
+//     next();
+//   } catch (err) {
+//     return handleErrorResponse(res, 403, "Invalid token.", err);
+//   }
+// };
 
-export const verifyAdmin = async (req, res, next) => {
-  if (!req.user || !req.user.isAdmin) {
-    return handleErrorResponse(res, 403, "Access denied. Admins only.");
-  }
+// export const verifyAdmin = async (req, res, next) => {
+//   if (!req.user || !req.user.isAdmin) {
+//     return handleErrorResponse(res, 403, "Access denied. Admins only.");
+//   }
 
-  next();
-};
+//   next();
+// };

@@ -1,10 +1,10 @@
-import { isAuthenticated } from "./utils/auth.js";
+import { isAuthenticated, getUserSession } from "./utils/auth.js";
 
 export function createRouter() {
   const routes = {
     "/": {
       template: "/unauthenticated/landing-page.html",
-      init: null, // No specific initialization needed for landing page
+      init: null, 
     },
     "/authenticated/destinations": {
       template: "/authenticated/destinations.html",
@@ -27,10 +27,16 @@ export function createRouter() {
     "/authenticated/new-destination": {
       template: "/authenticated/new-destination.html",
       init: async () => {
+        const user = getUserSession();
+        if (!user || !user.isAdmin) {
+          alert("You don't have permission to access this page.");
+          window.history.pushState({}, "", "/authenticated/trips");
+          handleRoute();
+          return;
+        }
         const m = await import(
           "./components/authenticated/destinations/addDestinations.js"
         );
-
         return m.addDestinationForm();
       },
     },

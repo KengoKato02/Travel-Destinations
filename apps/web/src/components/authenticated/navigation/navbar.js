@@ -1,6 +1,9 @@
-import { clearUserSession } from "../../../utils/auth";
+import { clearUserSession, getUserSession } from "../../../utils/auth";
 
 const createNavLinks = () => {
+  const user = getUserSession();
+  const isAdmin = user && user.isAdmin;
+
   const navLinksContainer = document.createElement("div");
   navLinksContainer.className =
     "flex flex-1 items-center justify-center sm:items-stretch sm:justify-start";
@@ -20,8 +23,11 @@ const createNavLinks = () => {
   const links = [
     { href: "/authenticated/trips", text: "Your Trips" },
     { href: "/authenticated/destinations", text: "Destinations" },
-    { href: "/authenticated/new-destination", text: "Add Destination" },
   ];
+
+  if (isAdmin) {
+    links.push({ href: "/authenticated/new-destination", text: "Add Destination" });
+  }
 
   const linksContainer = document.createElement("div");
   linksContainer.className = "hidden sm:ml-6 sm:flex sm:space-x-8";
