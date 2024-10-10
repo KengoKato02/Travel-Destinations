@@ -90,6 +90,26 @@ export async function postDestination(formData) {
   }
 }
 
+export async function deleteDestination(id) {
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/destinations/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete destination');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error deleting destination:', error);
+    throw error;
+  }
+}
+
 export async function fetchTripById(id) {
   try {
     const response = await fetch(`${process.env.API_BASE_URL}/trips/${id}`, {

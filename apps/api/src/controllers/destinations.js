@@ -1,40 +1,9 @@
+import mongoose from 'mongoose';
 import multer from 'multer';
 import Destination from '../schemas/Destination.js';
 import { handleErrorResponse } from '../utils/errorHandler.js';
 
 const upload = multer();
-
-export async function createDestination(req, res) {
-  try {
-    await upload.single('image_url')(req, res, async (err) => {
-      if (err) {
-        return handleErrorResponse(res, 400, 'Error uploading file', err);
-      }
-
-      const destination = new Destination({
-        title: req.body.title,
-        description: req.body.description,
-        start_date: req.body.start_date,
-        end_date: req.body.end_date,
-        country: req.body.country,
-        image_url: req.file ? {
-          data: req.file.buffer,
-          contentType: req.file.mimetype
-        } : undefined
-      });
-
-      const result = await destination.save();
-      console.log('result', result);
-
-      res.status(201).json(result);
-    });
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      return handleErrorResponse(res, 400, 'Validation errors', error);
-    }
-    handleErrorResponse(res, 500, 'Error creating destination', error);
-  }
-}
 
 export async function getHomeRoute(req, res) {
   try {
@@ -93,6 +62,39 @@ export async function getDestinationById(req, res) {
     res.status(200).json(destination);
   } catch (error) {
     handleErrorResponse(res, 500, 'Error fetching destination', error);
+  }
+}
+
+
+export async function createDestination(req, res) {
+  try {
+    await upload.single('image_url')(req, res, async (err) => {
+      if (err) {
+        return handleErrorResponse(res, 400, 'Error uploading file', err);
+      }
+
+      const destination = new Destination({
+        title: req.body.title,
+        description: req.body.description,
+        start_date: req.body.start_date,
+        end_date: req.body.end_date,
+        country: req.body.country,
+        image_url: req.file ? {
+          data: req.file.buffer,
+          contentType: req.file.mimetype
+        } : undefined
+      });
+
+      const result = await destination.save();
+      console.log('result', result);
+
+      res.status(201).json(result);
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return handleErrorResponse(res, 400, 'Validation errors', error);
+    }
+    handleErrorResponse(res, 500, 'Error creating destination', error);
   }
 }
 
