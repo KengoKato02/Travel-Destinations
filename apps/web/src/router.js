@@ -83,8 +83,14 @@ export function createRouter() {
   async function handleRoute() {
     const path = window.location.pathname;
 
-    if (path.startsWith("/authenticated")) {
-      if (!isAuthenticated()) {
+    if (isAuthenticated()) {
+      if (path === '/' || path === '/login' || path === '/signup') {
+        window.history.pushState({}, "", "/authenticated/trips");
+        handleRoute();
+        return;
+      }
+    } else {
+      if (path.startsWith("/authenticated")) {
         alert("You must be logged in to access this page.");
         window.history.pushState({}, "", "/login");
         handleRoute();

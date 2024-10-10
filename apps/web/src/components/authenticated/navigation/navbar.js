@@ -12,9 +12,8 @@ const createNavLinks = () => {
   logoContainer.className = "flex flex-shrink-0 items-center";
 
   const logoImg = document.createElement("img");
-  logoImg.className = "h-8 w-auto";
-  logoImg.src =
-    "https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600";
+  logoImg.className = "h-20 w-auto";
+  logoImg.src = "/icons/mountain-logo.png";
   logoImg.alt = "Your Company";
 
   logoContainer.appendChild(logoImg);

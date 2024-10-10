@@ -26,11 +26,7 @@ export const initLogin = () => {
         data.user.isAdmin
       );
 
-      console.log("User session:", getUserSession());
-
-      alert("Login successful");
-
-      window.location.href = "/authenticated/destinations";
+      window.location.href = "/authenticated/trips";
     } catch (error) {
       console.error("Error during login:", error);
 
