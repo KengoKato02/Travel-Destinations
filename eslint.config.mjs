@@ -18,7 +18,13 @@ const config = [
     },
     rules: {
       'n/no-process-env': 'off',
-      'no-console': 'off'
+      'no-console': 'off',
+      'import-x/extensions': 'off',
+      'import-x/order': 'off',
+      'max-statements': 'off',
+      'n/no-unsupported-features/node-builtins': 'off',
+      'sonarjs/pseudo-random': 'off',
+      'promise/prefer-await-to-callbacks': 'off'
     }
   }
 ];
@@ -35,7 +41,7 @@ config.push({
     parser: htmlParser
   },
   rules: {
-    ...htmlPlugin.default.configs.extended
+    ...htmlPlugin.default.configs.extended,
   }
 });
 

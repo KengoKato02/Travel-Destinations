@@ -1,178 +1,173 @@
 import cors from 'cors';
-import express from 'express';
-import { ObjectId } from 'mongodb';
 
-/* eslint-disable import-x/extensions */
+import express from 'express';
+
+import {
+  getHomeRoute,
+  getAllDestinations,
+  getDestinationById,
+  createDestination,
+  updateDestination,
+  deleteDestination
+} from './controllers/destinations.js';
+
+import {
+  getAllUsers,
+  getUserByEmail,
+  updateUser,
+  deleteUser
+} from './controllers/users.js';
+
+import {
+  getAllTrips,
+  getTripById,
+  createTrip,
+  updateTrip,
+  deleteTrip,
+  getTripsByUser,
+  addDestinationToTrip,
+  removeDestinationFromTrip
+} from './controllers/trips.js';
+
 import { config } from './db/config.js';
+
 import { connectToDatabase } from './db/db.js';
-/* eslint-enable import-x/extensions */
+
+import { validateObjectId } from './middleware/validateObjectId.js';
+
+import { login, signup, verifyToken } from './controllers/auth.js';
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 startServer();
-setupMiddleware();
-setupRoutes();
 
-let db;
+setupMiddleware();
+
+setupRoutes();
 
 export default app;
 
 function setupMiddleware() {
   app.use(
     cors({
-      origin:
-        config.isProduction === 'production'
-          ? ['https://travel-destinations-mu.vercel.app/']
-          : ['http://localhost:8080', 'http://127.0.0.1:8080'],
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
-      allowedHeaders: ['Content-Type']
+      origin: [
+        'https://travel-destinations-mu.vercel.app',
+        'http://localhost:8080',
+        'http://127.0.0.1:8080'
+      ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization']
     })
   );
-  app.use(express.json());
+
+  app.use(express.json({ limit: '50mb' }));
+
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
   app.disable('x-powered-by');
 }
 
 async function startServer() {
   try {
-    db = await connectToDatabase();
-    console.log('in start server', db);
+    await connectToDatabase();
 
     app.listen(PORT, () => {
       console.log(
-        `Server running in ${config.isProduction ? 'production' : 'development'} mode on port ${PORT}`
+        `Server running in ${
+          config.isProduction ? 'production' : 'development'
+        } mode on port ${PORT}`
       );
     });
   } catch (error) {
     console.error('Failed to start the server:', error);
+
     process.exit(1);
   }
 }
 
 function setupRoutes() {
-  app.get('/api', getHomeRoute);
-  app.get('/api/destinations', getAllDestinations);
-  app.get('/api/destinations/:id', getDestinationById);
-  app.post('/api/destinations', createDestination);
-  app.put('/api/destinations/:id', updateDestination);
-  app.delete('/api/destinations/:id', deleteDestination);
-}
+  app.options('*', cors());
 
-async function getHomeRoute(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const message = await collection.findOne({});
-    res.json({
-      message: message
-        ? message.name
-        : 'Welcome to the Travel Destinations Express API!'
-    });
-  } catch (error) {
-    handleError(error, res, 'Error in home route');
-  }
-}
+  // DESTINATION ROUTES
+  app.get('/api/v1', verifyToken, (req, res) => getHomeRoute(req, res));
 
-async function getAllDestinations(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const filtered = getFilterQuery(req.query);
+  app.get('/api/v1/destinations', verifyToken, (req, res) =>
+    getAllDestinations(req, res)
+  );
 
-    const destinations = await collection.find(filtered).toArray();
-    res.status(200).json(destinations);
-  } catch (error) {
-    handleError(error, res, 'Error fetching destinations');
-  }
-}
+  app.get('/api/v1/destinations/:id', verifyToken, (req, res) =>
+    getDestinationById(req, res)
+  );
 
-async function getDestinationById(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const destinationID = new ObjectId(req.params.id);
-    const destination = await collection.findOne({ _id: destinationID });
+  app.post('/api/v1/destinations', verifyToken, (req, res) =>
+    createDestination(req, res)
+  );
 
-    if (!destination) {
-      return res.status(404).json({ error: 'Destination not found' });
-    }
+  app.put('/api/v1/destinations/:id', verifyToken, (req, res) =>
+    updateDestination(req, res)
+  );
 
-    res.json(destination);
-  } catch (error) {
-    handleError(error, res, 'Error fetching destination');
-  }
-}
+  app.delete('/api/v1/destinations/:id', verifyToken, (req, res) =>
+    deleteDestination(req, res)
+  );
 
-async function createDestination(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const newDestination = req.body;
+  // USER ROUTES
+  app.get('/api/v1/users', verifyToken, (req, res) => getAllUsers(req, res));
 
-    const result = await collection.insertOne(newDestination);
-    res.status(201).json({ ...newDestination, _id: result.insertedId });
-  } catch (error) {
-    handleError(error, res, 'Error creating destination');
-  }
-}
+  app.get('/api/v1/users/:email', verifyToken, (req, res) =>
+    getUserByEmail(req, res)
+  );
 
-async function updateDestination(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const updatedDestination = req.body;
+  app.put('/api/v1/users/:email', verifyToken, (req, res) =>
+    updateUser(req, res)
+  );
 
-    const result = await collection.findOneAndUpdate(
-      { _id: new ObjectId(req.params.id) },
-      { $set: updatedDestination },
-      { returnDocument: 'after' }
-    );
+  app.delete('/api/v1/users/:email', verifyToken, (req, res) =>
+    deleteUser(req, res)
+  );
 
-    if (!result.value) {
-      return res.status(404).json({ error: 'Destination not found' });
-    }
+  // AUTHENTICATION ROUTES
+  app.post('/api/v1/auth/login', login);
 
-    res.json(result.value);
-  } catch (error) {
-    handleError(error, res, 'Error updating destination');
-  }
-}
+  app.post('/api/v1/auth/signup', signup);
 
-async function deleteDestination(req, res) {
-  try {
-    const collection = db.collection('travel_destinations_collection');
-    const result = await collection.deleteOne({
-      _id: new ObjectId(req.params.id)
-    });
+  // TRIP ROUTES
+  app.get('/api/v1/trips', verifyToken, (req, res) => getAllTrips(req, res));
 
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Destination not found' });
-    }
+  app.get(
+    '/api/v1/trips/:id',
+    verifyToken,
+    validateObjectId('id'),
+    getTripById
+  );
 
-    res.status(204).send();
-  } catch (error) {
-    handleError(error, res, 'Error deleting destination');
-  }
-}
+  app.post('/api/v1/trips', verifyToken, (req, res) => createTrip(req, res));
 
-function handleError(error, res, message) {
-  console.error(`${message}:`, error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
+  app.put('/api/v1/trips/:id', verifyToken, validateObjectId('id'), updateTrip);
 
-function getFilterQuery(filters) {
-  const query = {};
+  app.delete(
+    '/api/v1/trips/:id',
+    verifyToken,
+    validateObjectId('id'),
+    deleteTrip
+  );
 
-  const { name, location, travelDateFrom, travelDateTo, hasDescription } =
-    filters;
+  app.get(
+    '/api/v1/trips/user/:id',
+    verifyToken,
+    validateObjectId('id'),
+    getTripsByUser
+  );
 
-  if (name) { query.name = name; }
-  if (location) { query.location = location; }
+  app.post('/api/v1/trips/:id/destinations', verifyToken, (req, res) =>
+    addDestinationToTrip(req, res)
+  );
 
-  if (travelDateFrom || travelDateTo) {
-    query.$and = [];
-    if (travelDateFrom) { query.$and.push({ travelDateFrom: { $gte: travelDateFrom } }); }
-    if (travelDateTo) { query.$and.push({ travelDateTo: { $lte: travelDateTo } }); }
-  }
-
-  if (hasDescription) {
-    query.description = { $exists: hasDescription.trim() === 'true' };
-  }
-
-  return query;
+  app.delete(
+    '/api/v1/trips/:id/destinations/:destinationId',
+    verifyToken,
+    (req, res) => removeDestinationFromTrip(req, res)
+  );
 }

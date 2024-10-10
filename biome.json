@@ -20,5 +20,15 @@
     "formatter": {
       "quoteStyle": "single"
     }
+  },
+  "files": {
+    "ignore": [
+      "node_modules",
+      "dist",
+      ".cache",
+      ".husky",
+      "pnpm-lock.yaml",
+      "package-lock.json"
+    ]
   }
 }
