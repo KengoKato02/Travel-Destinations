@@ -2,6 +2,8 @@ import cors from 'cors';
 
 import express from 'express';
 
+import path from 'node:path';
+
 import {
   getHomeRoute,
   getAllDestinations,
@@ -170,4 +172,8 @@ function setupRoutes() {
     verifyToken,
     (req, res) => removeDestinationFromTrip(req, res)
   );
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../web/index.html'));
+  });
 }
