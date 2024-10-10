@@ -84,8 +84,6 @@ export async function createDestination(req, res) {
       const destination = new Destination({
         title: req.body.title,
         description: req.body.description,
-        start_date: req.body.start_date,
-        end_date: req.body.end_date,
         country: req.body.country,
         image_url: req.file
           ? {
