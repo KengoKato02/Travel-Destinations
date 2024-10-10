@@ -1,6 +1,6 @@
-import { stringify } from "safe-stable-stringify";
+import { stringify } from 'safe-stable-stringify';
 
-const SESSION_KEY = "userSession";
+const SESSION_KEY = 'userSession';
 
 const SESSION_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
@@ -10,7 +10,7 @@ export function setUserSession(email, username, token, isAdmin) {
     username,
     token,
     isAdmin,
-    expiresAt: Date.now() + SESSION_DURATION,
+    expiresAt: Date.now() + SESSION_DURATION
   };
 
   localStorage.setItem(SESSION_KEY, stringify(session));
@@ -35,7 +35,13 @@ export function getUserSession() {
 }
 
 export function clearUserSession() {
+  console.log('Clearing user session');
+
+  console.log('Before clear:', localStorage.getItem(SESSION_KEY));
+
   localStorage.removeItem(SESSION_KEY);
+
+  console.log('After clear:', localStorage.getItem(SESSION_KEY));
 }
 
 export function isAuthenticated() {

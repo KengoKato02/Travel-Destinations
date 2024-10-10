@@ -1,7 +1,10 @@
 import { stringify } from 'safe-stable-stringify';
-import {getUserSession} from './auth.js';
+
+import { getAuthToken, getUserSession } from './auth.js';
 
 const { API_BASE_URL } = process.env;
+
+const token = getAuthToken();
 
 export async function fetchMessage() {
   try {
@@ -22,7 +25,8 @@ export async function fetchDestinations() {
     const response = await fetch(`${process.env.API_BASE_URL}/destinations`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -41,17 +45,24 @@ export async function fetchTrips() {
     const response = await fetch(`${process.env.API_BASE_URL}/trips`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       }
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch destinations');
+      if (response.status === 403) {
+        throw new Error('Authentication failed. Please log in again.');
+      }
+
+      throw new Error('Failed to fetch trips');
     }
 
     return await response.json();
   } catch (error) {
-    throw new Error(error.message);
+    console.error('Error fetching trips:', error);
+
+    throw error;
   }
 }
 
@@ -60,7 +71,8 @@ export async function fetchDestinationsById(id) {
     const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -75,9 +87,14 @@ export async function fetchDestinationsById(id) {
 }
 
 export async function postDestination(formData) {
+  console.log('called with token', token);
+
   try {
     const response = await fetch(`${API_BASE_URL}/destinations`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
       body: formData
     });
 
@@ -96,7 +113,8 @@ export async function deleteDestination(id) {
     const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -113,12 +131,13 @@ export async function deleteDestination(id) {
 }
 
 export async function updateDestination(id, formData) {
-  console.log('Form data:', Object.fromEntries(formData.entries()));
-
   try {
     const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
       method: 'PUT',
-      body: formData
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
     if (!response.ok) {
@@ -135,18 +154,23 @@ export async function updateDestination(id, formData) {
 
 export async function deleteTrip(tripId) {
   try {
-    const response = await fetch(`${process.env.API_BASE_URL}/trips/${tripId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/trips/${tripId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to delete trip');
     }
   } catch (error) {
     console.error('Error deleting trip:', error);
+
     throw error;
   }
 }
@@ -156,7 +180,8 @@ export async function fetchTripById(id) {
     const response = await fetch(`${process.env.API_BASE_URL}/trips/${id}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -173,11 +198,16 @@ export async function fetchTripById(id) {
 export async function postTrip(formData) {
   try {
     const userSession = await getUserSession();
-    const email = userSession.email; 
-    formData.append('email', email); 
+
+    const { email } = userSession;
+
+    formData.append('email', email);
 
     const response = await fetch(`${process.env.API_BASE_URL}/trips`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
       body: formData
     });
 
@@ -197,6 +227,9 @@ export async function updateTrip(id, formData) {
   try {
     const response = await fetch(`${process.env.API_BASE_URL}/trips/${id}`, {
       method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
       body: formData
     });
 
@@ -217,7 +250,8 @@ export const addDestinationToTrip = async (tripId, destinationId) => {
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         body: stringify({ destinationId })
       }
@@ -240,7 +274,11 @@ export const removeDestinationFromTrip = async (tripId, destinationId) => {
     const response = await fetch(
       `${process.env.API_BASE_URL}/trips/${tripId}/destinations/${destinationId}`,
       {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       }
     );
 

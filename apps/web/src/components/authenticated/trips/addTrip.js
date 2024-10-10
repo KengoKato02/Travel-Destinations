@@ -13,13 +13,16 @@ export const addTripForm = () => {
 
       if (response) {
         alert('Trip added successfully!');
+
         form.reset();
-        window.location.href = '/trips';
+
+        window.location.href = '/authenticated/trips';
       } else {
         throw new Error('Failed to add trip');
       }
     } catch (error) {
       console.error(error);
+
       alert('Error adding trip. Please try again.');
     }
   });
