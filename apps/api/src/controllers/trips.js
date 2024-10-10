@@ -16,9 +16,19 @@ function handleError(error, res, message) {
 
 export const getAllTrips = async (req, res) => {
   try {
-    const trips = await Trip.find({}).lean();
+    console.log(req.user.isAdmin, req.user.user);
 
-    if (!trips.length) {
+    let trips = [];
+
+    if (req.user.isAdmin === true) {
+      trips = await Trip.find({}).lean();
+    } else {
+      const id = req.user.user;
+
+      trips = await Trip.find({ user_id: id }).lean();
+    }
+
+    if (trips.length === 0) {
       return res.status(404).json({ message: 'No trips found' });
     }
 
@@ -61,7 +71,8 @@ export const createTrip = async (req, res) => {
 
       if (!start_date || !end_date || !title || !description) {
         return res.status(400).json({
-          error: 'All fields are required (Start Date, End Date, Title, Description)'
+          error:
+            'All fields are required (Start Date, End Date, Title, Description)'
         });
       }
 
@@ -70,10 +81,11 @@ export const createTrip = async (req, res) => {
         title,
         description,
         start_date,
-        end_date,
+        end_date
       });
 
       const result = await newTrip.save();
+
       console.log('Trip created:', result);
 
       res.status(201).json(result);
@@ -107,6 +119,7 @@ export const updateTrip = async (req, res) => {
 
     try {
       const { id } = req.params;
+
       const { title, description, start_date, end_date } = req.body;
 
       if (!title || !start_date || !end_date || !description) {
@@ -153,6 +166,7 @@ export const getTripsByUser = async (req, res) => {
 export const addDestinationToTrip = async (req, res) => {
   try {
     const { id: tripId } = req.params;
+
     const { destinationId } = req.body;
 
     const updatedTrip = await Trip.findByIdAndUpdate(
