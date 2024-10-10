@@ -1,8 +1,14 @@
 import mongoose from 'mongoose';
 
+import multer from 'multer';
+
 import Destination from '../schemas/Destination.js';
 
 import { handleErrorResponse } from '../utils/errorHandler.js';
+
+const upload = multer({
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
 
 export async function getHomeRoute(req, res) {
   try {
@@ -26,7 +32,23 @@ export async function getAllDestinations(req, res) {
       return handleErrorResponse(res, 404, 'No destinations found');
     }
 
-    res.status(200).json(destinations);
+    const destinationsWithImageUrls = destinations.map((dest) => {
+      const destObj = dest.toObject();
+
+      if (typeof destObj.image_url === 'string') {
+        return destObj;
+      }
+
+      if (destObj.image_url?.data && destObj.image_url.contentType) {
+        destObj.image_url = `data:${destObj.image_url.contentType};base64,${destObj.image_url.data.toString('base64')}`;
+      } else {
+        destObj.image_url = null;
+      }
+
+      return destObj;
+    });
+
+    res.status(200).json(destinationsWithImageUrls);
   } catch (error) {
     handleErrorResponse(res, 500, 'Error fetching destinations', error);
   }
@@ -54,20 +76,30 @@ export async function getDestinationById(req, res) {
 
 export async function createDestination(req, res) {
   try {
-    const destination = new Destination({
-      title: req.body.title,
-      description: req.body.description,
-      start_date: req.body.start_date,
-      end_date: req.body.end_date,
-      image_url: req.body.image_url,
-      country: req.body.country
+    await upload.single('image_url')(req, res, async (err) => {
+      if (err) {
+        return handleErrorResponse(res, 400, 'Error uploading file', err);
+      }
+
+      const destination = new Destination({
+        title: req.body.title,
+        description: req.body.description,
+        start_date: req.body.start_date,
+        end_date: req.body.end_date,
+        country: req.body.country,
+        image_url: req.file
+          ? {
+              data: req.file.buffer,
+              contentType: req.file.mimetype
+            }
+          : undefined
+      });
+
+      const result = await destination.save();
+
+      res.status(201).json(result);
     });
-
-    const result = await destination.save();
-
-    res.status(201).json(result);
   } catch (error) {
-    // Handling Mongoose validation errors
     if (error.name === 'ValidationError') {
       return handleErrorResponse(res, 400, 'Validation errors', error);
     }
@@ -77,32 +109,50 @@ export async function createDestination(req, res) {
 }
 
 export async function updateDestination(req, res) {
-  try {
-    const destinationID = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(destinationID)) {
-      return handleErrorResponse(res, 400, 'Invalid destination ID');
+  upload.single('image')(req, res, async (err) => {
+    if (err) {
+      return handleErrorResponse(res, 400, 'Error uploading file', err);
     }
 
-    const updatedDestination = await Destination.findByIdAndUpdate(
-      destinationID,
-      { $set: req.body },
-      { new: true, runValidators: true } // Enable validation during update
-    ).lean();
+    const { id } = req.params;
 
-    if (!updatedDestination) {
-      return handleErrorResponse(res, 404, 'Destination not found');
+    const { title, description, country } = req.body;
+
+    const image = req.file;
+
+    try {
+      const updateData = {
+        title,
+        description,
+        country
+      };
+
+      if (image) {
+        updateData.image_url = {
+          data: image.buffer,
+          contentType: image.mimetype
+        };
+      }
+
+      const updatedDestination = await Destination.findByIdAndUpdate(
+        id,
+        { $set: updateData },
+        { new: true, runValidators: true }
+      ).lean();
+
+      if (!updatedDestination) {
+        return handleErrorResponse(res, 404, 'Destination not found');
+      }
+
+      res.status(200).json(updatedDestination);
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+        return handleErrorResponse(res, 400, 'Validation errors', error);
+      }
+
+      handleErrorResponse(res, 500, 'Error updating destination', error);
     }
-
-    res.status(200).json(updatedDestination);
-  } catch (error) {
-    // Handling Mongoose validation errors
-    if (error.name === 'ValidationError') {
-      return handleErrorResponse(res, 400, 'Validation errors', error);
-    }
-
-    handleErrorResponse(res, 500, 'Error updating destination', error);
-  }
+  });
 }
 
 export async function deleteDestination(req, res) {

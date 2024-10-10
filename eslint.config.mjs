@@ -24,6 +24,7 @@ const config = [
       'max-statements': 'off',
       'n/no-unsupported-features/node-builtins': 'off',
       'sonarjs/pseudo-random': 'off',
+      'promise/prefer-await-to-callbacks': 'off'
     }
   }
 ];

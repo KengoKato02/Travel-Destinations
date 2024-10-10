@@ -21,9 +21,8 @@ const destinationSchema = new mongoose.Schema(
       required: true
     },
     image_url: {
-      type: String,
-      required: false,
-      match: /^https?:\/\/.+/
+      data: Buffer,
+      contentType: String
     },
     country: {
       type: String,

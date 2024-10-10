@@ -26,7 +26,7 @@ export const getTripById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const trip = await Trip.findById(id).lean();
+    const trip = await Trip.findById(id).populate('destinations').lean();
 
     if (!trip) {
       return res.status(404).json({ error: 'Trip not found' });
@@ -127,5 +127,46 @@ export const getTripsByUser = async (req, res) => {
     res.status(200).json(trips);
   } catch (error) {
     handleError(error, res, 'Error fetching trips');
+  }
+};
+
+export const addDestinationToTrip = async (req, res) => {
+  try {
+    const { id: tripId } = req.params;
+    const { destinationId } = req.body;
+
+    const updatedTrip = await Trip.findByIdAndUpdate(
+      tripId,
+      { $addToSet: { destinations: destinationId } },
+      { new: true }
+    ).populate('destinations');
+
+    if (!updatedTrip) {
+      return res.status(404).json({ error: 'Trip not found' });
+    }
+
+    res.status(200).json(updatedTrip);
+  } catch (error) {
+    handleError(error, res, 'Error adding destination to trip');
+  }
+};
+
+export const removeDestinationFromTrip = async (req, res) => {
+  try {
+    const { id: tripId, destinationId } = req.params;
+
+    const updatedTrip = await Trip.findByIdAndUpdate(
+      tripId,
+      { $pull: { destinations: destinationId } },
+      { new: true }
+    ).populate('destinations');
+
+    if (!updatedTrip) {
+      return res.status(404).json({ error: 'Trip not found' });
+    }
+
+    res.status(200).json(updatedTrip);
+  } catch (error) {
+    handleError(error, res, 'Error removing destination from trip');
   }
 };
