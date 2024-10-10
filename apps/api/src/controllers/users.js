@@ -18,19 +18,16 @@ export async function getAllUsers(req, res) {
 }
 
 // Get user by email
-export async function getUserByEmail(req, res) {
+export const getUserByEmail = async (email) => {
   try {
-    const { email } = req.params;
-
-    const user = await User.findOne({ email }).select('-password -_id');
-
+    const user = await User.findOne({ email }).lean();
     if (!user) {
-      return handleErrorResponse(res, 404, 'User not found');
+      throw new Error('User not found');
     }
-
-    res.status(200).json(user);
+    return user;
   } catch (error) {
-    handleErrorResponse(res, 500, 'Error fetching user', error);
+    console.error('Error fetching user by email:', error);
+    throw error; 
   }
 }
 

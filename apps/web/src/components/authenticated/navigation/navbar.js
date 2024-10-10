@@ -2,7 +2,7 @@ import { clearUserSession, getUserSession } from "../../../utils/auth";
 
 const createNavLinks = () => {
   const user = getUserSession();
-  const isAdmin = user && user.isAdmin;
+  const isAdmin = user?.isAdmin;
 
   const navLinksContainer = document.createElement("div");
   navLinksContainer.className =
@@ -21,6 +21,7 @@ const createNavLinks = () => {
 
   const links = [
     { href: "/authenticated/trips", text: "Your Trips" },
+    { href: "/authenticated/new-trip", text: "Add Trip" },
     { href: "/authenticated/destinations", text: "Destinations" },
   ];
 

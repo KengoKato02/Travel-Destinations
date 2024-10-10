@@ -24,6 +24,14 @@ export function createRouter() {
         return m.loadTrips();
       }
     },
+    '/authenticated/new-trip': {
+      template: '/authenticated/new-trip.html',
+      init: async () => {
+        const m = await import('./components/authenticated/trips/addTrip.js');
+
+        return m.addTripForm();
+      }
+    },
     "/authenticated/new-destination": {
       template: "/authenticated/new-destination.html",
       init: async () => {
@@ -98,9 +106,8 @@ export function createRouter() {
       }
     }
 
-    // New code to handle dynamic routes
     let matchedRoute = null;
-    let params = {};
+    const params = {};
 
     for (const [routePath, routeConfig] of Object.entries(routes)) {
       const routeParts = routePath.split('/');
@@ -132,7 +139,6 @@ export function createRouter() {
     if (mainContent) {
       mainContent.innerHTML = content;
 
-      // Wait for the next frame to ensure the content is rendered
       await new Promise(resolve => requestAnimationFrame(resolve));
 
       if (route.init) {
