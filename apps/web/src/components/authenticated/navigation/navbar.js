@@ -45,33 +45,51 @@ const createNavLinks = () => {
   return navLinksContainer;
 };
 
-const createLogoutButton = () => {
-  const logoutButton = document.createElement("button");
-  logoutButton.type = "button";
-  logoutButton.className =
-    "inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-bold text-black hover:border-gray-300 hover:text-gray-700";
-  logoutButton.textContent = "Logout";
+const createProfileButton = () => {
+  const profileButton = document.createElement("div");
+  profileButton.className = "relative ml-3";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className =
+    "relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
+  button.id = "user-menu-button";
+  button.setAttribute("aria-expanded", "false");
+  button.setAttribute("aria-haspopup", "true");
+
+  const profileImg = document.createElement("img");
+  profileImg.className = "h-8 w-8 rounded-full";
+  profileImg.src =
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  profileImg.alt = "Profile";
+
+  button.appendChild(profileImg);
+  profileButton.appendChild(button);
+
+  const dropdown = document.createElement("div");
+  dropdown.className =
+    "absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden";
+  dropdown.setAttribute("role", "menu");
+  dropdown.setAttribute("aria-orientation", "vertical");
+  dropdown.setAttribute("aria-labelledby", "user-menu-button");
+  dropdown.innerHTML = `
+    <button class="block w-full text-left px-4 py-2 text-sm text-gray-700" role="menuitem" id="logoutButton">Sign out</button>
+  `;
+
+  profileButton.appendChild(dropdown);
+
+  button.addEventListener("click", () => {
+    dropdown.classList.toggle("hidden");
+  });
+
+  const logoutButton = dropdown.querySelector("#logoutButton");
   logoutButton.addEventListener("click", () => {
     if (confirm("Are you sure you want to log out?")) {
       clearUserSession();
       window.location.href = "/landing";
     }
   });
-  return logoutButton;
-};
 
-const createProfileButton = () => {
-  const profileButton = document.createElement("button");
-  profileButton.type = "button";
-  profileButton.className =
-    "relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
-
-  const profileImg = document.createElement("img");
-  profileImg.className = "h-8 w-8 rounded-full";
-  profileImg.src =
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-
-  profileButton.appendChild(profileImg);
   return profileButton;
 };
 
@@ -92,10 +110,7 @@ export const createNavbar = () => {
   profileContainer.className =
     "absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0";
 
-  const logoutButton = createLogoutButton();
   const profileButton = createProfileButton();
-
-  profileContainer.appendChild(logoutButton);
   profileContainer.appendChild(profileButton);
 
   flexContainer.appendChild(profileContainer);

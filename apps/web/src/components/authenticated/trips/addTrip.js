@@ -14,6 +14,7 @@ export const addTripForm = () => {
       if (response) {
         alert('Trip added successfully!');
         form.reset();
+        window.location.href = '/trips';
       } else {
         throw new Error('Failed to add trip');
       }

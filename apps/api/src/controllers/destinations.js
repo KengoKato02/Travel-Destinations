@@ -7,7 +7,14 @@ import Destination from '../schemas/Destination.js';
 import { handleErrorResponse } from '../utils/errorHandler.js';
 
 const upload = multer({
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'image/png') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PNG files are allowed'), false);
+    }
+  }
 });
 
 export async function getHomeRoute(req, res) {
