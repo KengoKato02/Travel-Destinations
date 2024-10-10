@@ -89,64 +89,82 @@ export function createRouter() {
   }
 
   async function handleRoute() {
+    if (!handleAuthRedirects()) return;
+
+    const { matchedRoute, params } = findMatchingRoute();
+    await renderContent(matchedRoute, params);
+  }
+
+  function handleAuthRedirects() {
     const path = window.location.pathname;
 
     if (isAuthenticated()) {
       if (path === '/' || path === '/login' || path === '/signup') {
         window.history.pushState({}, "", "/authenticated/trips");
         handleRoute();
-        return;
+        return false;
       }
     } else {
       if (path.startsWith("/authenticated")) {
         alert("You must be logged in to access this page.");
         window.history.pushState({}, "", "/login");
         handleRoute();
-        return;
+        return false;
       }
     }
+    return true;
+  }
 
+  function findMatchingRoute() {
+    const path = window.location.pathname;
     let matchedRoute = null;
     const params = {};
 
     for (const [routePath, routeConfig] of Object.entries(routes)) {
-      const routeParts = routePath.split('/');
-      const pathParts = path.split('/');
-
-      if (routeParts.length === pathParts.length) {
-        let match = true;
-        for (let i = 0; i < routeParts.length; i++) {
-          if (routeParts[i].startsWith(':')) {
-            params[routeParts[i].slice(1)] = pathParts[i];
-          } else if (routeParts[i] !== pathParts[i]) {
-            match = false;
-            break;
-          }
-        }
-        if (match) {
-          matchedRoute = routeConfig;
-          break;
-        }
+      const match = matchRoute(routePath, path);
+      if (match) {
+        matchedRoute = routeConfig;
+        Object.assign(params, match.params);
+        break;
       }
     }
 
-    const route = matchedRoute || routes["/"];
+    return { matchedRoute: matchedRoute || routes["/"], params };
+  }
 
+  async function renderContent(route, params) {
     const content = await loadContent(route.template);
-
     const mainContent = document.getElementById("main-content");
 
     if (mainContent) {
       mainContent.innerHTML = content;
-
       await new Promise(resolve => requestAnimationFrame(resolve));
-
       if (route.init) {
         await route.init(params);
       }
     } else {
       console.error("Main content element not found");
     }
+  }
+
+  function matchRoute(routePath, path) {
+    const routeParts = routePath.split('/');
+    const pathParts = path.split('/');
+
+    if (routeParts.length !== pathParts.length) {
+      return null;
+    }
+
+    const params = {};
+    for (let i = 0; i < routeParts.length; i++) {
+      if (routeParts[i].startsWith(':')) {
+        params[routeParts[i].slice(1)] = pathParts[i];
+      } else if (routeParts[i] !== pathParts[i]) {
+        return null;
+      }
+    }
+
+    return { params };
   }
 
   function init() {
