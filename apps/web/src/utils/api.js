@@ -92,7 +92,7 @@ export async function postDestination(formData) {
 
 export async function deleteDestination(id) {
   try {
-    const response = await fetch(`${process.env.API_BASE_URL}/destinations/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -106,6 +106,28 @@ export async function deleteDestination(id) {
     return true;
   } catch (error) {
     console.error('Error deleting destination:', error);
+
+    throw error;
+  }
+}
+
+export async function updateDestination(id, formData) {
+  console.log('Form data:', Object.fromEntries(formData.entries()));
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/destinations/${id}`, {
+      method: 'PUT',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update destination');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating destination:', error);
+
     throw error;
   }
 }
@@ -127,17 +149,20 @@ export async function fetchTripById(id) {
   } catch (error) {
     throw new Error(error.message);
   }
-};
+}
 
 export const addDestinationToTrip = async (tripId, destinationId) => {
   try {
-    const response = await fetch(`${process.env.API_BASE_URL}/trips/${tripId}/destinations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ destinationId }),
-    });
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/trips/${tripId}/destinations`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: stringify({ destinationId })
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Failed to add destination');
@@ -146,15 +171,19 @@ export const addDestinationToTrip = async (tripId, destinationId) => {
     return await response.json();
   } catch (error) {
     console.error('Error adding destination:', error);
+
     throw error;
   }
 };
 
 export const removeDestinationFromTrip = async (tripId, destinationId) => {
   try {
-    const response = await fetch(`${process.env.API_BASE_URL}/trips/${tripId}/destinations/${destinationId}`, {
-      method: 'DELETE',
-    });
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/trips/${tripId}/destinations/${destinationId}`,
+      {
+        method: 'DELETE'
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Failed to remove destination');
@@ -163,6 +192,7 @@ export const removeDestinationFromTrip = async (tripId, destinationId) => {
     return await response.json();
   } catch (error) {
     console.error('Error removing destination:', error);
+
     throw error;
   }
 };
