@@ -1,6 +1,12 @@
 import Trip from '../schemas/Trip.js';
 
+import multer from 'multer';
+
 import { getUserByEmail } from './users.js';
+
+const upload = multer({
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
 
 function handleError(error, res, message) {
   console.error(`${message}:`, error);
@@ -39,33 +45,42 @@ export const getTripById = async (req, res) => {
 };
 
 export const createTrip = async (req, res) => {
-  try {
-    const user = await getUserByEmail(req.body.email);
-
-    const { title, description, destinations, start_date, end_date } = req.body;
-
-    if (!destinations || !start_date || !end_date || !title || !description) {
-      return res.status(400).json({
-        error:
-          'All fields are required (Destinations, Start Date, End Date, Title, Description)'
-      });
+  upload.single('image')(req, res, async (err) => {
+    if (err) {
+      return handleError(err, res, 'Error uploading file');
     }
 
-    const newTrip = new Trip({
-      user_id: user._id,
-      title,
-      description,
-      destinations,
-      start_date,
-      end_date
-    });
+    try {
+      const user = await getUserByEmail(req.body.email);
 
-    const result = await newTrip.save();
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
 
-    res.status(201).json(result);
-  } catch (error) {
-    handleError(error, res, 'Error creating trip');
-  }
+      const { title, description, start_date, end_date } = req.body;
+
+      if (!start_date || !end_date || !title || !description) {
+        return res.status(400).json({
+          error: 'All fields are required (Start Date, End Date, Title, Description)'
+        });
+      }
+
+      const newTrip = new Trip({
+        user_id: user._id,
+        title,
+        description,
+        start_date,
+        end_date,
+      });
+
+      const result = await newTrip.save();
+      console.log('Trip created:', result);
+
+      res.status(201).json(result);
+    } catch (error) {
+      handleError(error, res, 'Error creating trip');
+    }
+  });
 };
 
 export const deleteTrip = async (req, res) => {
@@ -85,33 +100,38 @@ export const deleteTrip = async (req, res) => {
 };
 
 export const updateTrip = async (req, res) => {
-  try {
-    const { id } = req.params;
+  upload.single('image')(req, res, async (err) => {
+    if (err) {
+      return handleError(err, res, 'Error uploading file');
+    }
 
-    const { title, description, destinations, start_date, end_date } = req.body;
+    try {
+      const { id } = req.params;
+      const { title, description, start_date, end_date } = req.body;
 
-    if (!title || !destinations || !start_date || !end_date || !description) {
-      return res.status(400).json({
-        error:
-          'All fields are required (Destinations, Start Date, End Date, Title, Description)'
+      if (!title || !start_date || !end_date || !description) {
+        return res.status(400).json({
+          error:
+            'All fields are required (Destinations, Start Date, End Date, Title, Description)'
+        });
+      }
+
+      const updatedTrip = await Trip.findByIdAndUpdate(id, req.body, {
+        new: true,
+        lean: true
       });
+
+      if (!updatedTrip) {
+        return res.status(404).json({ error: 'Trip not found' });
+      }
+
+      res
+        .status(200)
+        .json({ message: 'Trip updated successfully', trip: updatedTrip });
+    } catch (error) {
+      handleError(error, res, 'Error updating trip');
     }
-
-    const updatedTrip = await Trip.findByIdAndUpdate(id, req.body, {
-      new: true,
-      lean: true
-    });
-
-    if (!updatedTrip) {
-      return res.status(404).json({ error: 'Trip not found' });
-    }
-
-    res
-      .status(200)
-      .json({ message: 'Trip updated successfully', trip: updatedTrip });
-  } catch (error) {
-    handleError(error, res, 'Error updating trip');
-  }
+  });
 };
 
 export const getTripsByUser = async (req, res) => {

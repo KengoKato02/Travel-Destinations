@@ -1,4 +1,5 @@
 import { stringify } from 'safe-stable-stringify';
+import {getUserSession} from './auth.js';
 
 const { API_BASE_URL } = process.env;
 
@@ -132,6 +133,24 @@ export async function updateDestination(id, formData) {
   }
 }
 
+export async function deleteTrip(tripId) {
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/trips/${tripId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete trip');
+    }
+  } catch (error) {
+    console.error('Error deleting trip:', error);
+    throw error;
+  }
+}
+
 export async function fetchTripById(id) {
   try {
     const response = await fetch(`${process.env.API_BASE_URL}/trips/${id}`, {
@@ -143,6 +162,46 @@ export async function fetchTripById(id) {
 
     if (!response.ok) {
       throw new Error('Failed to fetch trip details');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function postTrip(formData) {
+  try {
+    const userSession = await getUserSession();
+    const email = userSession.email; 
+    formData.append('email', email); 
+
+    const response = await fetch(`${process.env.API_BASE_URL}/trips`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create trip');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateTrip(id, formData) {
+  console.log('Form data:', Object.fromEntries(formData.entries()));
+
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/trips/${id}`, {
+      method: 'PUT',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update trip');
     }
 
     return await response.json();

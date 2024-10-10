@@ -111,25 +111,18 @@ function setupRoutes() {
 
   // USER ROUTES
   app.get('/api/v1/users', (req, res) => getAllUsers(req, res));
-
   app.get('/api/v1/users/:email', (req, res) => getUserByEmail(req, res));
-
   app.put('/api/v1/users/:email', (req, res) => updateUser(req, res));
-
   app.delete('/api/v1/users/:email', (req, res) => deleteUser(req, res));
 
   // AUTHENTICATION ROUTES
   app.post('/api/v1/auth/login', login);
-
   app.post('/api/v1/auth/signup', signup);
 
   // TRIP ROUTES
   app.get('/api/v1/trips', (req, res) => getAllTrips(req, res));
-
   app.get('/api/v1/trips/:id', validateObjectId('id'), getTripById);
-
   app.post('/api/v1/trips', (req, res) => createTrip(req, res));
-
   app.put('/api/v1/trips/:id', validateObjectId('id'), updateTrip);
 
   app.delete('/api/v1/trips/:id', validateObjectId('id'), deleteTrip);
