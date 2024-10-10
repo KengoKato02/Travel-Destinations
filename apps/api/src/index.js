@@ -25,6 +25,8 @@ import {
   updateTrip,
   deleteTrip,
   getTripsByUser,
+  addDestinationToTrip,
+  removeDestinationFromTrip,
 } from "./controllers/trips.js";
 
 import { config } from "./db/config.js";
@@ -135,4 +137,6 @@ function setupRoutes() {
   app.put("/api/v1/trips/:id", validateObjectId("id"), updateTrip);
   app.delete("/api/v1/trips/:id", validateObjectId("id"), deleteTrip);
   app.get("/api/v1/trips/user/:id", validateObjectId("id"), getTripsByUser);
+  app.post('/api/v1/trips/:id/destinations', (req, res) => addDestinationToTrip(req, res));
+  app.delete('/api/v1/trips/:id/destinations/:destinationId', (req, res) => removeDestinationFromTrip(req, res));
 }

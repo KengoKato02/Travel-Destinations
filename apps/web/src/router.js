@@ -34,6 +34,13 @@ export function createRouter() {
         return m.addDestinationForm();
       },
     },
+    '/authenticated/trips/:id': {
+      template: '/authenticated/trip-details.html',
+      init: async (params) => {
+        const m = await import('./components/authenticated/trips/tripDetails.js');
+        return m.loadTripDetails(params.id);
+      }
+    },
     "/login": {
       template: "/unauthenticated/auth/login.html",
       init: async () => {
@@ -50,23 +57,21 @@ export function createRouter() {
         return m.initSignup();
       },
     },
-    '/authenticated/trips/:id': {
-      template: '/authenticated/trip-details.html',
-      init: async () => {
-        const tripId = window.location.pathname.split('/').pop();
-        if (tripId) {
-          const m = await import('./components/authenticated/trips/tripDetails.js');
-          return m.loadTripDetails(tripId);
-        }
-        console.error('No trip ID provided');
-      }
-    },
   };
 
   async function loadContent(url) {
-    const response = await fetch(url);
-
-    return response.text();
+    console.log('Loading content from:', url);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.warn(`Failed to load content from ${url}. Status: ${response.status}. Using fallback content.`);
+        return;
+      }
+      return await response.text();
+    } catch (error) {
+      console.warn(`Error loading content from ${url}:`, error.message);
+      return; 
+    }
   }
 
   async function handleRoute() {
@@ -81,7 +86,32 @@ export function createRouter() {
       }
     }
 
-    const route = routes[path] || routes["/"];
+    // New code to handle dynamic routes
+    let matchedRoute = null;
+    let params = {};
+
+    for (const [routePath, routeConfig] of Object.entries(routes)) {
+      const routeParts = routePath.split('/');
+      const pathParts = path.split('/');
+
+      if (routeParts.length === pathParts.length) {
+        let match = true;
+        for (let i = 0; i < routeParts.length; i++) {
+          if (routeParts[i].startsWith(':')) {
+            params[routeParts[i].slice(1)] = pathParts[i];
+          } else if (routeParts[i] !== pathParts[i]) {
+            match = false;
+            break;
+          }
+        }
+        if (match) {
+          matchedRoute = routeConfig;
+          break;
+        }
+      }
+    }
+
+    const route = matchedRoute || routes["/"];
 
     const content = await loadContent(route.template);
 
@@ -90,8 +120,11 @@ export function createRouter() {
     if (mainContent) {
       mainContent.innerHTML = content;
 
+      // Wait for the next frame to ensure the content is rendered
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
       if (route.init) {
-        await route.init();
+        await route.init(params);
       }
     } else {
       console.error("Main content element not found");

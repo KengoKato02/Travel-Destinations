@@ -18,9 +18,9 @@ const createNavLinks = () => {
   navLinksContainer.appendChild(logoContainer);
 
   const links = [
-    { href: "trips", text: "Your Trips" },
-    { href: "destinations", text: "Destinations" },
-    { href: "new-destination", text: "Add Destination" },
+    { href: "/authenticated/trips", text: "Your Trips" },
+    { href: "/authenticated/destinations", text: "Destinations" },
+    { href: "/authenticated/new-destination", text: "Add Destination" },
   ];
 
   const linksContainer = document.createElement("div");

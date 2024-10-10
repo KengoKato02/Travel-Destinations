@@ -110,4 +110,42 @@ export async function fetchTripById(id) {
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
+
+export const addDestinationToTrip = async (tripId, destinationId) => {
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/trips/${tripId}/destinations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ destinationId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add destination');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error adding destination:', error);
+    throw error;
+  }
+};
+
+export const removeDestinationFromTrip = async (tripId, destinationId) => {
+  try {
+    const response = await fetch(`${process.env.API_BASE_URL}/trips/${tripId}/destinations/${destinationId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to remove destination');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error removing destination:', error);
+    throw error;
+  }
+};
