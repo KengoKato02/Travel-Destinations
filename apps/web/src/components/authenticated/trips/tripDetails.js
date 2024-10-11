@@ -90,10 +90,17 @@ export const loadTripDetails = async (tripId) => {
     const removeDestinationBtns = document.querySelectorAll('.removeDestinationBtn');
     removeDestinationBtns.forEach(btn => {
       btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const destinationId = e.currentTarget.dataset.destinationId;
+        if (!destinationId) {
+          console.error('Destination ID is undefined');
+          return;
+        }
         try {
-          await removeDestinationFromTrip(trip._id, e.target.dataset.destinationId);
+          await removeDestinationFromTrip(trip._id, destinationId);
           loadTripDetails(trip._id); 
         } catch (error) {
+          console.error('Error removing destination:', error);
           alert('Failed to remove destination. Please try again.');
         }
       });

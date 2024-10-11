@@ -162,7 +162,7 @@ export async function updateDestination(id, formData) {
 export async function deleteTrip(tripId) {
   try {
     const response = await fetch(
-      `${process.env.process.env.API_BASE_URL}/trips/${tripId}`,
+      `${process.env.API_BASE_URL}/trips/${tripId}`,
       {
         method: 'DELETE',
         headers: {
@@ -277,6 +277,7 @@ export const addDestinationToTrip = async (tripId, destinationId) => {
 };
 
 export const removeDestinationFromTrip = async (tripId, destinationId) => {
+  console.log(tripId, destinationId)
   try {
     const response = await fetch(
       `${process.env.API_BASE_URL}/trips/${tripId}/destinations/${destinationId}`,
