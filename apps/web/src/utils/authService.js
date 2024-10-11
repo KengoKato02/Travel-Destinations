@@ -1,7 +1,7 @@
 import { stringify } from 'safe-stable-stringify';
 
 export const signupUser = async (formObject) => {
-  const response = await fetch(`${process.env.API_BASE_URL}/signup`, {
+  const response = await fetch(`${process.env.API_BASE_URL}/auth/signup`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -19,7 +19,7 @@ export const signupUser = async (formObject) => {
 };
 
 export const loginUser = async (formObject) => {
-  const response = await fetch(`${process.env.API_BASE_URL}/login`, {
+  const response = await fetch(`${process.env.API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
