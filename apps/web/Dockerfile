@@ -7,19 +7,17 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package.json ./
 
-RUN rm -rf node_modules
-
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the application code, excluding node_modules
 COPY . .
 
 # Build the application
-RUN npm build
+RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Start the application
-CMD ["npm", "dev"]
+CMD ["npm", "run", "dev"]
