@@ -5,11 +5,10 @@ FROM node:18
 WORKDIR /usr/src/app
 
 # Copy the entire monorepo
-COPY . .
+COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies using pnpm
 RUN npm install -g pnpm
-RUN pnpm install
+RUN pnpm install --frozen-lockfile 
 
 # Expose the ports the apps run on
 EXPOSE 3000 8080
