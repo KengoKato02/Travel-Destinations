@@ -9,6 +9,7 @@ COPY package.json pnpm-lock.yaml ./
 
 RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile 
+RUN pnpm rebuild bcrypt --build-from-source
 
 # Expose the ports the apps run on
 EXPOSE 3000 8080
