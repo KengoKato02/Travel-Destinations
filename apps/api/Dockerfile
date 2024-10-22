@@ -12,7 +12,7 @@ RUN npm install -g pnpm
 RUN pnpm install
 
 # Expose the port the API runs on
-EXPOSE 8080
+EXPOSE 3000
 
 # Start the API application
 CMD ["pnpm", "dev"]

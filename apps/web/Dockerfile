@@ -12,7 +12,7 @@ RUN npm install -g pnpm
 RUN pnpm install
 
 # Expose the port the Web app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Start the Web application
 CMD ["pnpm", "dev"]
