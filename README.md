@@ -2,34 +2,6 @@
 
 This project is a monorepo workspace containing a vanilla JavaScript frontend and an Express.js API backend for a Travel Destinations application.
 
-## ER Diagrams
-
-### V1 (Basic Version)
-
-![ER Diagram V1](/assets/ER-Diagram-v1.png)
-
-This initial version of the ER diagram for the Travel Destinations project meets the minimum requirements, depicting a simple relationship between users and destinations. It shows a one-to-many relationship where one user can have multiple destinations.
-
-### V2 (For mongo : No-Normlaization)
-![ER Diagram V2](/assets/ER-Diagram-v2.png)
-
-The second version of the ER diagram is designed for MongoDB without normalization. This version is intended to be implemented within our final submission. The digram shows a one to many for users to trips, and a many to many for the trips to destinations. The destinations array in the trips table also holds an array of destination_id's 
-
-### V3 (For SQL : Normalized)
-
-![ER Diagram V3](/assets/ER-Diagram-v3.png)
-
-The third version of the ER diagram is tailored for SQL databases with normalization considerations. This version includes normalized tables to reduce redundancy and improve data integrity. It hold similar strucutre to v2 but introduces a join table called `TripDestinations` that contains `trip_id` and `destination_id` to establish a many-to-many relationship between trips and destinations.
-
-## Project Structure
-
-The project is organized into the following directories:
-
-- `apps/api`: Contains the Express.js API backend.
-- `apps/web`: Contains the vanilla JavaScript frontend.
-
-Each application has its own `package.json` file and can be developed and run independently.
-
 ## Prerequisites
 
 - Node.js (version >= 18.16.1)
@@ -85,17 +57,131 @@ You can run linting and formatting using the following commands:
 - `pnpm lint`: Runs Biome linter on all files
 - `pnpm format`: Runs Biome formatter on all files
 
+## ER Diagrams
+
+### V1 (Basic Version)
+
+![ER Diagram V1](/assets/ER-Diagram-v1.png)
+
+This initial version of the ER diagram for the Travel Destinations project meets the minimum requirements, depicting a simple relationship between users and destinations. It shows a one-to-many relationship where one user can have multiple destinations.
+
+### V2 (For mongo : No-Normlaization)
+![ER Diagram V2](/assets/ER-Diagram-v2.png)
+
+The second version of the ER diagram is designed for MongoDB without normalization. This version is intended to be implemented within our final submission. The digram shows a one to many for users to trips, and a many to many for the trips to destinations. The destinations array in the trips table also holds an array of destination_id's 
+
+### V3 (For SQL : Normalized)
+
+![ER Diagram V3](/assets/ER-Diagram-v3.png)
+
+The third version of the ER diagram is tailored for SQL databases with normalization considerations. This version includes normalized tables to reduce redundancy and improve data integrity. It hold similar strucutre to v2 but introduces a join table called `TripDestinations` that contains `trip_id` and `destination_id` to establish a many-to-many relationship between trips and destinations.
+
+## Docker
+
+This project is containerized using Docker, allowing for easy deployment and consistent environments across different systems. Below is a detailed explanation of how we containerize and run our Travel Destinations application.
+
+### Project Structure
+
+Our project uses a multi-container setup with Docker Compose. The main components are:
+
+1. API (Express.js backend)
+2. Web (Vanilla JavaScript frontend)
+
+Each component has its own Dockerfile, and we use a `docker-compose.yml` file to orchestrate the containers.
+
+### Dockerfiles
+
+#### API Dockerfile
+
+The API Dockerfile is located at `apps/api/Dockerfile`:
+
+#### Web Dockerfile
+
+The Web Dockerfile is located at `apps/web/Dockerfile`:
+
+This Dockerfile sets up the environment for the Web frontend, installs dependencies, and starts the development server.
+
+### Docker Compose
+
+We use Docker Compose to define and run our multi-container application. The `docker-compose.yml` file is located in the root directory:
+
+This Docker Compose file defines two services: `api` and `web`. It sets up the build context, port mappings, environment variables, volumes for live code reloading, and a shared network for inter-container communication.
+
+### Running the Containerized Application
+
+To run the containerized application, follow these steps:
+
+1. Ensure you have Docker and Docker Compose installed on your system.
+
+2. Navigate to the root directory of the project where the `docker-compose.yml` file is located.
+
+3. Build and start the containers:
+
+   ```
+   docker-compose up --build
+   ```
+
+   This command will build the Docker images (if they haven't been built before or if there are changes) and start the containers.
+
+4. Once the containers are up and running, you can access:
+   - The API at `http://localhost:3000`
+   - The Web frontend at `http://localhost:8080`
+
+5. To stop the containers, use:
+
+   ```
+   docker-compose down
+   ```
+
+### Development Workflow with Docker
+
+When developing with Docker:
+
+1. Changes to the code in `apps/api` and `apps/web` will be reflected in real-time due to the volume mounts.
+
+2. If you need to add new dependencies:
+   - Stop the containers
+   - Add the dependency to the respective `package.json` file
+   - Rebuild and start the containers: `docker-compose up --build`
+
+3. To run commands inside a container:
+   ```
+   docker-compose exec api pnpm your-command
+   docker-compose exec web pnpm your-command
+   ```
+
+4. To view logs:
+   ```
+   docker-compose logs api
+   docker-compose logs web
+   ```
+
+### Production Deployment
+
+For production deployment:
+
+1. Update the Dockerfiles to use production builds (e.g., `CMD ["pnpm", "start"]` instead of `CMD ["pnpm", "dev"]`).
+
+2. Create a `docker-compose.prod.yml` file with production-specific configurations.
+
+3. Build and run the production containers:
+   ```
+   docker-compose -f docker-compose.prod.yml up --build
+   ```
+
+### Benefits of Dockerization
+
+- Consistent development environment across team members
+- Easy setup for new developers
+- Simplified deployment process
+- Isolation of services
+- Scalability and portability
+
+By containerizing our Travel Destinations application, we ensure a consistent and reproducible environment for development, testing, and production deployment.
+
 ### Git Hooks
 
 We use Husky for Git hooks and lint-staged for running linters on staged files before committing. The configuration can be found in the root `package.json`:
-
-## API (Express.js)
-
-The main entry point is `apps/api/src/index.js`.
-
-## Frontend (Vanilla JavaScript)
-
-The frontend is located in the `apps/web` directory.
 
 ## Development Workflow
 
@@ -115,3 +201,4 @@ The frontend is located in the `apps/web` directory.
 5. Submit a pull request
 
 Developers: Patrick, Digna, Frej, Kengo
+
