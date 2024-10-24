@@ -179,6 +179,17 @@ For production deployment:
 
 By containerizing our Travel Destinations application, we ensure a consistent and reproducible environment for development, testing, and production deployment.
 
+### Docker Desktop
+![Docker Images](/assets/docker-images.png)
+
+The image above shows the Docker Desktop interface with the Travel Destinations API and Web images. These images are built from the Dockerfiles in the respective directories and can be run as containers using Docker Compose.
+
+![Docker Container](/assets/docker-container.png)
+
+The image above shows the running containers for the Travel Destinations API and Web services. These containers are isolated environments that run the application components and can be accessed through the specified ports.
+
+![Docker Container](/assets/docker-container-2.png)
+
 ### Git Hooks
 
 We use Husky for Git hooks and lint-staged for running linters on staged files before committing. The configuration can be found in the root `package.json`:
